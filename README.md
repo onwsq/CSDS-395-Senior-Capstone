@@ -1,1 +1,1 @@
-# CSDS395-Senior-Capstone
+# CSDS-395-Senior-Capstone
