@@ -10,4 +10,8 @@ router.get('/contact', function(req, res, next) {
   res.render('contact', { title: 'Express' });
 });
 
+router.get('/users', function(req, res, next) {
+  res.render('users', { title: 'Express' });
+});
+
 module.exports = router;
