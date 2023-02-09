@@ -68,7 +68,8 @@ print(shows)
 field_names = ['Title', 'Occurrences']
 
 
-pd.DataFrame.from_dict(data=movies, orient='index').to_csv('Names.csv')
+pd.DataFrame.from_dict(data=movies, orient='index', columns=['Title']).to_csv('movies.csv', header=True)
+pd.DataFrame.from_dict(data=shows, orient='index', columns=['Title']).to_csv('shows.csv', header=True)
 
 # print("movies_val: "+str(movies_val))
 # for val in movies:
