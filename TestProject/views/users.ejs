@@ -21,8 +21,8 @@
       </div>
     </nav>
 </head>
-<div class="usersbody">
-    <div class="positionProfileButton">
+<div class="usersbody" id="userbody">
+    <div class="positionProfileButton" id="positionProfileButton">
         <button class="addProfileButton" role="button" onclick="onClickEvent()">Add Profile</button>
     </div>
 </div>
@@ -31,6 +31,10 @@
 
 
 <script> //separate
+  var conditional = '<%=newProfile%>';
+  if(conditional == 'yes'){
+    document.getElementById("userbody").innerHTML += '<div class="popup"><h2>Profile Created</h2><a class="close" href="/users">&times;</a><div class="content">The profile has been saved and will be available for selection.</div></div>';
+  }
   function onClickEvent(){
     location.href = "http://localhost:8888/newprofile";
     console.log(window.href);

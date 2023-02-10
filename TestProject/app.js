@@ -4,11 +4,6 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var bodyParser = require('body-parser');
-var homepageRouter = require('./routes/homepage');
-var usersRouter = require('./routes/users');
-var contactRouter = require('./routes/contact');
-var profileRouter = require('./routes/newprofile');
-var algorithmRouter = require('./routes/algorithm');
 var app = express();
 var AWS = require("aws-sdk");
 
@@ -42,7 +37,7 @@ app.get('/contact', function(req, res, next) {
 });
 
 app.get('/users', function(req, res, next) {
-  res.render('users', { title: 'Express' });
+  res.render('users', { newProfile: 'no', title: 'Express' });
 });
 
 app.get('/newprofile', function(req, res, next) {
@@ -55,7 +50,7 @@ app.get('/algorithm', function(req, res, next) {
 
 app.post('/newprofile', function(req, res, next) {
   sendProfile(req.body.nickname, req.body.username, req.body.password);
-  res.render('algorithm', {myVar: 'idk', title: 'Express' });
+  res.render('users', {newProfile: 'yes', title: 'Express' });
 });
 
 // catch 404 and forward to error handler
@@ -77,7 +72,7 @@ app.use(function(err, req, res, next) {
 function sendProfile(nickname, username, password){
 
   var bucketName = 'added-new-person';
-  var keyName = 'userprofile.json';
+  var keyName = nickname + 'userprofile.json';
 
   var bucketPromise = new AWS.S3({apiVersion: '2006-03-01'}).createBucket({Bucket: bucketName}).promise();
 
