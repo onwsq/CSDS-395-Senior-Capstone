@@ -1,0 +1,97 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<meta charset="utf-8">
+<title>New Profile</title>
+<meta charset="utf-8">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<link rel="stylesheet" href="stylesheets/style.css">
+<head>
+    <nav class="navbar navbar-default">
+      <div class="container">
+        <div class="navbar-header">
+          <p class="navbar-brand">CinemUs</p>
+        </div>
+        <ul class="nav navbar-nav navbar-right">
+          <li id="home"><a href="/">Home</a></li>
+          <li id="userprofiles"><a href="/users">User Profiles</a></li>
+          <li id="algorithm"><a href="/algorithm">Begin Algorithm</a></li>
+        </ul>
+      </div>
+    </nav>
+</head> 
+
+<div class="algorithmbody">
+    <div class="container">
+        <h1>Profile Selection</h1>
+        <div class="row" id="rowprofiles">
+          <label>
+            <input type="checkbox" name="" />
+            <div class="icon-box">
+            <i class="fa fa-heart"></i>
+              <span><%=myVar%></span>
+            </div>
+          </label>
+          <label>
+            <input type="checkbox" name="" />
+            <div class="icon-box">
+              <i class="fa fa-music"></i>
+              <span>Person</span>
+            </div>
+          </label>
+          <label>
+            <input type="checkbox" name="" />
+            <div class="icon-box">
+              <i class="fa fa-imdb"></i>
+              <span>Person</span>
+            </div>
+          </label>
+          <label>
+            <input type="checkbox" name="" />
+            <div class="icon-box">
+              <i class="fa fa-book"></i>
+              <span>Person</span>
+            </div>
+          </label>
+  
+          <label>
+            <input type="checkbox" name="" />
+            <div class="icon-box">
+              <i class="fa fa-dribbble"></i>
+              <span>Person</span>
+            </div>
+          </label>
+  
+          <label>
+            <input type="checkbox" name="" />
+            <div class="icon-box">
+              <i class="fa fa-desktop"></i>
+              <span>Person</span>
+            </div>
+          </label>
+          <label>
+            <input type="checkbox" name="" />
+            <div class="icon-box">
+              <i class="fa fa-gamepad"></i>
+              <span>Person</span>
+            </div>
+          </label>
+        </div>
+      </div>
+    </div>
+</div>
+
+<script>
+
+  function LoopTest(profiles) 
+  {
+      var i=0;
+      for (i=0;i<profiles;i++)
+      {
+          document.getElementById("rowprofiles").innerHTML += "<button>button</button>"
+      }
+  }
+
+</script>
+
+</html>
