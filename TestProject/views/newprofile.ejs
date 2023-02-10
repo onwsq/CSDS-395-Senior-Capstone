@@ -1,0 +1,50 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<meta charset="utf-8">
+<title>New Profile</title>
+<meta charset="utf-8">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<link rel="stylesheet" href="stylesheets/style.css">
+<head>
+    <nav class="navbar navbar-default">
+      <div class="container">
+        <div class="navbar-header">
+          <p class="navbar-brand">CinemUs</p>
+        </div>
+        <ul class="nav navbar-nav navbar-right">
+          <li id="home"><a href="/">Home</a></li>
+          <li id="userprofiles"><a href="/users">User Profiles</a></li>
+          <li id="algorithm"><a href="/algorithm">Begin Algorithm</a></li>
+        </ul>
+      </div>
+    </nav>
+</head> 
+
+<div class="newprofilebody">
+<div class="box">
+	<form method="post" action="/newprofile">
+		<span class="text-center">New Profile</span>
+    <div class="input-container">
+      <input type="text" id="nickname" name="nickname" required=""/>
+      <label>Profile Nickname</label>		
+    </div>
+    <div class="input-container">
+      <input type="text" id="username" name="username" required=""/>
+      <label>Username</label>		
+    </div>
+    <div class="input-container">		
+      <input type="password" id="password" name="password" required=""/>
+      <label>Password</label>
+    </div>
+    <div class="input-container">		
+      <input type="file" id="watchhistory" required=""/>
+      <label>Watch History (csv file)</label>
+    </div>
+		<button type="submit" class="btn">submit</button>
+</form>	
+</div>
+</div>
+
+</html>
