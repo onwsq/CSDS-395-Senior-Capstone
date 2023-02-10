@@ -6,10 +6,11 @@ import requests
 import re
 from datetime import date
 from datetime import datetime
+from collections import Counter
 
 
 ia = imdb.IMDb()
-genres = {}
+genres = []
 shows = {}
 total_genres = 0
 data = pd.read_csv('movies.csv')
@@ -18,10 +19,17 @@ df = data.values
 print(df)
 
 for i in df:
-    search = ia.search_movie(i[0])
-    if len(search) > 0:
-        info = ia.get_movie(search[0].movieID)
-        print(info)
+    # only watched once
+    if i[1] == 1:
+        temp = i[2:]
+        genres = np.concatenate((genres, temp))
+    cleaned_genres = [x for x in genres if str(x) != 'nan']
+print(cleaned_genres)
+print(len(cleaned_genres))
+
+common_genres = [genre for genre, val in Counter(cleaned_genres).most_common()]
+print(common_genres)
+
 # print(df[0][1])
 #Avatar: the last airbender :
 # for i in df:
