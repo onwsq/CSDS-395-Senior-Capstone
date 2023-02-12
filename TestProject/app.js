@@ -7,7 +7,6 @@ var bodyParser = require('body-parser');
 var app = express();
 var AWS = require("aws-sdk");
 
-
 AWS.config.getCredentials(function(err) {
   if (err) console.log(err.stack);
   // credentials not loaded
@@ -16,6 +15,7 @@ AWS.config.getCredentials(function(err) {
   }
 });
 
+var profileslist = [];
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -36,16 +36,18 @@ app.get('/contact', function(req, res, next) {
   res.render('contact', { title: 'Express' });
 });
 
-app.get('/users', function(req, res, next) {
-  res.render('users', { newProfile: 'no', title: 'Express' });
+app.get('/users', async function(req, res, next) {
+  var algorithmlist = await getProfiles();
+  res.render('users', { algorithmlist: algorithmlist, newProfile: 'no', title: 'Express' });
 });
 
 app.get('/newprofile', function(req, res, next) {
   res.render('newprofile', { title: 'Express' });
 });
 
-app.get('/algorithm', function(req, res, next) {
-  res.render('algorithm', {myVar: 'idk', title: 'Express' });
+app.get('/algorithm', async function(req, res, next) {
+  var algorithmlist = await getProfiles();
+  res.render('algorithm', {algorithmlist: algorithmlist, title: 'Express' });
 });
 
 app.post('/newprofile', function(req, res, next) {
@@ -69,13 +71,84 @@ app.use(function(err, req, res, next) {
   res.render('error');
 });
 
-function sendProfile(nickname, username, password){
+function getProfListBucket(){
+  var bucketNameProfList = 'profiles-list'
+  var profilesListKeyName = 'profilenames.json'
+  var listed = [];
 
+  new Promise((resolve, reject) => {
+    new AWS.S3({apiVersion: '2006-03-01'}).getObject({Bucket: bucketNameProfList, Key: profilesListKeyName}, function (err, data) {
+        if (err) {
+
+        } else {
+            console.log("Successfully dowloaded data from bucket");
+            var object = JSON.parse(data.Body.toString());
+            var profiles = object.profiles;
+            profiles.forEach(p=>{
+              listed.push(p);
+            })
+        }
+    });
+  });
+  return new Promise(resolve=>{
+    setTimeout(()=>{
+      resolve(listed);
+    }, 2000);
+  })
+}
+
+async function getProfiles(){
+  var listtosend = [];
+
+  var results = await getProfListBucket();
+
+  results.forEach(key => {
+    var newkey = key + 'userprofile.json'; 
+    console.log(newkey);
+    new Promise((resolve, reject) => {
+      new AWS.S3({apiVersion: '2006-03-01'}).getObject({Bucket: 'added-new-person', Key: newkey}, function (err, data) {
+          if (err) {
+              reject(err);
+          } else {
+              console.log("Successfully dowloaded data from bucket");
+              var object = JSON.parse(data.Body.toString());
+              listtosend.push([object.nickname]);
+              resolve(data);
+          }
+      });
+    });
+  });
+  return new Promise(resolve=>{
+    setTimeout(()=>{
+      resolve(listtosend);
+    }, 2000);
+  })
+}
+
+function sendProfile(nickname, username, password){
+  var bucketNameProfList = 'profiles-list'
+  var profilesListKeyName = 'profilenames.json'
   var bucketName = 'added-new-person';
   var keyName = nickname + 'userprofile.json';
+  var profilesAll = [];
+
+  new Promise((resolve, reject) => {
+    new AWS.S3({apiVersion: '2006-03-01'}).getObject({Bucket: bucketNameProfList, Key: profilesListKeyName}, function (err, data) {
+        if (err) {
+
+        } else {
+            console.log("Successfully dowloaded data from bucket");
+            var object = JSON.parse(data.Body.toString());
+            var profiles = object.profiles;
+            profiles.forEach(p=>{
+              profilesAll.push(p);
+            })
+        }
+    });
+  });
+  profilesAll.push(nickname);
 
   var bucketPromise = new AWS.S3({apiVersion: '2006-03-01'}).createBucket({Bucket: bucketName}).promise();
-
   bucketPromise.then(
     function(data) {
       var objectParams = {
@@ -95,18 +168,25 @@ function sendProfile(nickname, username, password){
     function(err) {
       console.error(err, err.stack);
   });
-  // new Promise((resolve, reject) => {
-  //   new AWS.S3({apiVersion: '2006-03-01'}).getObject({Bucket: 'idk-what-it-wants', Key: keyName}, function (err, data) {
-  //       if (err) {
-  //           reject(err);
-  //       } else {
-  //           console.log("Successfully dowloaded data from  bucket");
-  //           var object = JSON.parse(data.Body.toString());
-  //           console.log(object.nickname);
-  //           resolve(data);
-  //       }
-  //   });
-  // });
+
+  var bucketPromise = new AWS.S3({apiVersion: '2006-03-01'}).createBucket({Bucket: bucketNameProfList}).promise();
+  bucketPromise.then(
+    function(data) {
+      var objectParams = {
+        Bucket: bucketNameProfList, 
+        Key: profilesListKeyName, 
+        Body: JSON.stringify({
+          'profiles': profilesAll
+        })};
+      var uploadPromise = new AWS.S3({apiVersion: '2006-03-01'}).putObject(objectParams).promise();
+      uploadPromise.then(
+        function(data) {
+          console.log("Successfully uploaded data to " + bucketName + "/" + keyName);
+        });
+  }).catch(
+    function(err) {
+      console.error(err, err.stack);
+  });
 }
 
 

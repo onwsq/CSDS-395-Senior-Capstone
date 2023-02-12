@@ -81,7 +81,7 @@
   font-size: 16px;
 
   border: 0;
-
+  
   user-select: none;
   -webkit-user-select: none;
   touch-action: manipulation;
@@ -228,7 +228,6 @@ i{
   padding-top: 30%;
 }
 
-
 .row label input[type="checkbox"]:checked ~ .icon-box {
   background: rgb(151, 60, 75);
   color: white;
@@ -281,6 +280,43 @@ i{
   font-weight: bold;
   text-decoration: none;
   color: pink;
+}
+
+/* existing profiles list */
+.rowexisting {
+  margin: 20px;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+}
+
+
+.rowexisting label {
+  position: relative;
+  padding: 20px;
+  cursor: pointer;
+  display: flex;
+  vertical-align: middle;
+}
+
+.rowexisting label .icon-boxexisting {
+  position: relative;
+  display: flex;
+  width: 160px;
+  height: 160px;
+  padding: 20px;
+  flex-direction: column;
+  align-items: center;
+  background-color: #8B4513;
+  color: #fff;
+  border-radius: 3px;
+  font-size: 21px;
+  transition: 0.5s;
+  user-select: none;
+
+}
+
+i{
+  padding-top: 30%;
 }
 
 
