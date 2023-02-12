@@ -50,9 +50,10 @@ app.get('/algorithm', async function(req, res, next) {
   res.render('algorithm', {algorithmlist: algorithmlist, title: 'Express' });
 });
 
-app.post('/newprofile', function(req, res, next) {
+app.post('/newprofile', async function(req, res, next) {
   sendProfile(req.body.nickname, req.body.username, req.body.password);
-  res.render('users', {newProfile: 'yes', title: 'Express' });
+  var algorithmlist = await getProfiles();
+  res.render('users', {algorithmlist: algorithmlist, newProfile: 'yes', title: 'Express' });
 });
 
 // catch 404 and forward to error handler
