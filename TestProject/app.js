@@ -51,9 +51,22 @@ app.get('/algorithm', async function(req, res, next) {
 });
 
 app.post('/newprofile', async function(req, res, next) {
-  sendProfile(req.body.nickname, req.body.username, req.body.password);
   var algorithmlist = await getProfiles();
-  res.render('users', {algorithmlist: algorithmlist, newProfile: 'yes', title: 'Express' });
+  var flag = false;
+  algorithmlist.forEach(a=>{
+    console.log(a[0]);
+    console.log(req.body.nickname);
+    if(a[0] == req.body.nickname){
+      flag = true;
+    }
+  })
+  if(flag){
+    res.render('users', {algorithmlist: algorithmlist, newProfile: 'exists', title: 'Express' });
+  }else{
+    await sendProfile(req.body.nickname, req.body.username, req.body.password);
+    var algorithmlist2 = await getProfiles();
+    res.render('users', {algorithmlist: algorithmlist2, newProfile: 'yes', title: 'Express' });
+  }
 });
 
 // catch 404 and forward to error handler
@@ -146,6 +159,7 @@ function sendProfile(nickname, username, password){
         }
     });
   });
+  console.log(profilesAll);
   profilesAll.push(nickname);
 
   var bucketPromise = new AWS.S3({apiVersion: '2006-03-01'}).createBucket({Bucket: bucketName}).promise();

@@ -23,12 +23,18 @@
     </nav>
 </head>
 <div class="usersbody" id="userbody">
-    <div class="positionProfileButton" id="positionProfileButton">
-        <button class="addProfileButton" role="button" onclick="onClickEvent()">Add Profile</button>
-    </div><br><br>
-    <div class="container">
-      <h1>Existing Profiles</h1>
-      <div class="rowexisting" id="rowprofiles">
+  <div class="positionProfileButton" id="positionProfileButton">
+      <button class="addProfileButton" role="button" onclick="onClickEvent()">Add Profile</button>
+  </div><br><br>
+  <div class="container" id="profilescontainer">
+    <h1>Existing Profiles</h1>
+    <div class="rowexisting" id="rowprofiles">
+      <% if(newProfile == 'yes'){ %>
+        <div class="popup"><h2>Profile Created</h2><a class="close" href="/users">&times;</a><div class="content">The profile has been saved and will be available for selection.</div></div>
+      <% } %>
+      <% if(newProfile == 'exists'){ %>
+        <div class="popup"><h2>Profile Not Created</h2><a class="close" href="/users">&times;</a><div class="content">This nickname is taken. View the list of existing nicknames here and try again.</div></div>
+      <% } if(newProfile == 'no') {%>
         <% for(var i = 0 ; i < algorithmlist.length ; i++) { %>
           <label>
             <div class="icon-boxexisting">
@@ -37,20 +43,12 @@
             </div>
           </label>
         <% } %>
-      </div>
+      <% } %>
     </div>
   </div>
 </div>
 
-
-
-
-<script> //separate
-  console.log('here')
-  var conditional = '<%=newProfile%>';
-  if(conditional == 'yes'){
-    document.getElementById("userbody").innerHTML += '<div class="popup"><h2>Profile Created</h2><a class="close" href="/users">&times;</a><div class="content">The profile has been saved and will be available for selection.</div></div>';
-  }
+<script> 
   function onClickEvent(){
     location.href = "http://localhost:8888/newprofile";
     console.log(window.href);
