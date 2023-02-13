@@ -15,8 +15,6 @@ AWS.config.getCredentials(function(err) {
   }
 });
 
-var profileslist = [];
-
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
@@ -45,8 +43,10 @@ app.get('/newprofile', function(req, res, next) {
   res.render('newprofile', { title: 'Express' });
 });
 
+var iconsList = ['fa-solid fa-hippo', 'fa-solid fa-otter', 'fa-solid fa-paw', 'fa-solid fa-cow', 'fa-solid fa-fish', 'fa-solid fa-dog', 'fa-solid fa-worm', 'fa-solid fa-horse', 'fa-solid fa-frog', 'fa-solid fa-cat', 'fa-solid fa-dove'];
 app.get('/algorithm', async function(req, res, next) {
   var algorithmlist = await getProfiles();
+  console.log(algorithmlist);
   res.render('algorithm', {algorithmlist: algorithmlist, title: 'Express' });
 });
 
@@ -105,7 +105,6 @@ async function getProfiles(){
 
   results.forEach(key => {
     var newkey = key + 'userprofile.json'; 
-    console.log(newkey);
     new Promise((resolve, reject) => {
       new AWS.S3({apiVersion: '2006-03-01'}).getObject({Bucket: 'added-new-person', Key: newkey}, function (err, data) {
           if (err) {
@@ -113,7 +112,7 @@ async function getProfiles(){
           } else {
               console.log("Successfully dowloaded data from bucket");
               var object = JSON.parse(data.Body.toString());
-              listtosend.push([object.nickname]);
+              listtosend.push([object.nickname, object.icon]);
               resolve(data);
           }
       });
@@ -158,7 +157,8 @@ function sendProfile(nickname, username, password){
         Body: JSON.stringify({
           'nickname': nickname, 
           'username': username,
-          'password': password
+          'password': password, 
+          'icon': iconsList[Math.floor(Math.random()*iconsList.length) | 0]
         })};
       var uploadPromise = new AWS.S3({apiVersion: '2006-03-01'}).putObject(objectParams).promise();
       uploadPromise.then(
