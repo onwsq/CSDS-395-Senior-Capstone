@@ -4,14 +4,8 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var bodyParser = require('body-parser');
-var homepageRouter = require('./routes/homepage');
-var usersRouter = require('./routes/users');
-var contactRouter = require('./routes/contact');
-var profileRouter = require('./routes/newprofile');
-var algorithmRouter = require('./routes/algorithm');
 var app = express();
 var AWS = require("aws-sdk");
-
 
 AWS.config.getCredentials(function(err) {
   if (err) console.log(err.stack);
@@ -20,7 +14,6 @@ AWS.config.getCredentials(function(err) {
     console.log("Access key:", AWS.config.credentials.accessKeyId);
   }
 });
-
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -41,21 +34,39 @@ app.get('/contact', function(req, res, next) {
   res.render('contact', { title: 'Express' });
 });
 
-app.get('/users', function(req, res, next) {
-  res.render('users', { title: 'Express' });
+app.get('/users', async function(req, res, next) {
+  var algorithmlist = await getProfiles();
+  res.render('users', { algorithmlist: algorithmlist, newProfile: 'no', title: 'Express' });
 });
 
 app.get('/newprofile', function(req, res, next) {
   res.render('newprofile', { title: 'Express' });
 });
 
-app.get('/algorithm', function(req, res, next) {
-  res.render('algorithm', {myVar: 'idk', title: 'Express' });
+var iconsList = ['fa-solid fa-hippo', 'fa-solid fa-otter', 'fa-solid fa-paw', 'fa-solid fa-cow', 'fa-solid fa-fish', 'fa-solid fa-dog', 'fa-solid fa-worm', 'fa-solid fa-horse', 'fa-solid fa-frog', 'fa-solid fa-cat', 'fa-solid fa-dove'];
+app.get('/algorithm', async function(req, res, next) {
+  var algorithmlist = await getProfiles();
+  console.log(algorithmlist);
+  res.render('algorithm', {algorithmlist: algorithmlist, title: 'Express' });
 });
 
-app.post('/newprofile', function(req, res, next) {
-  sendProfile(req.body.nickname, req.body.username, req.body.password);
-  res.render('algorithm', {myVar: 'idk', title: 'Express' });
+app.post('/newprofile', async function(req, res, next) {
+  var algorithmlist = await getProfiles();
+  var flag = false;
+  algorithmlist.forEach(a=>{
+    console.log(a[0]);
+    console.log(req.body.nickname);
+    if(a[0] == req.body.nickname){
+      flag = true;
+    }
+  })
+  if(flag){
+    res.render('users', {algorithmlist: algorithmlist, newProfile: 'exists', title: 'Express' });
+  }else{
+    await sendProfile(req.body.nickname, req.body.username, req.body.password);
+    var algorithmlist2 = await getProfiles();
+    res.render('users', {algorithmlist: algorithmlist2, newProfile: 'yes', title: 'Express' });
+  }
 });
 
 // catch 404 and forward to error handler
@@ -74,13 +85,84 @@ app.use(function(err, req, res, next) {
   res.render('error');
 });
 
-function sendProfile(nickname, username, password){
+function getProfListBucket(){
+  var bucketNameProfList = 'profiles-list'
+  var profilesListKeyName = 'profilenames.json'
+  var listed = [];
 
+  new Promise((resolve, reject) => {
+    new AWS.S3({apiVersion: '2006-03-01'}).getObject({Bucket: bucketNameProfList, Key: profilesListKeyName}, function (err, data) {
+        if (err) {
+
+        } else {
+            console.log("Successfully dowloaded data from bucket");
+            var object = JSON.parse(data.Body.toString());
+            var profiles = object.profiles;
+            profiles.forEach(p=>{
+              listed.push(p);
+            })
+        }
+    });
+  });
+  return new Promise(resolve=>{
+    setTimeout(()=>{
+      resolve(listed);
+    }, 2000);
+  })
+}
+
+async function getProfiles(){
+  var listtosend = [];
+
+  var results = await getProfListBucket();
+
+  results.forEach(key => {
+    var newkey = key + 'userprofile.json'; 
+    new Promise((resolve, reject) => {
+      new AWS.S3({apiVersion: '2006-03-01'}).getObject({Bucket: 'added-new-person', Key: newkey}, function (err, data) {
+          if (err) {
+              reject(err);
+          } else {
+              console.log("Successfully dowloaded data from bucket");
+              var object = JSON.parse(data.Body.toString());
+              listtosend.push([object.nickname, object.icon]);
+              resolve(data);
+          }
+      });
+    });
+  });
+  return new Promise(resolve=>{
+    setTimeout(()=>{
+      resolve(listtosend);
+    }, 2000);
+  })
+}
+
+function sendProfile(nickname, username, password){
+  var bucketNameProfList = 'profiles-list'
+  var profilesListKeyName = 'profilenames.json'
   var bucketName = 'added-new-person';
-  var keyName = 'userprofile.json';
+  var keyName = nickname + 'userprofile.json';
+  var profilesAll = [];
+
+  new Promise((resolve, reject) => {
+    new AWS.S3({apiVersion: '2006-03-01'}).getObject({Bucket: bucketNameProfList, Key: profilesListKeyName}, function (err, data) {
+        if (err) {
+
+        } else {
+            console.log("Successfully dowloaded data from bucket");
+            var object = JSON.parse(data.Body.toString());
+            var profiles = object.profiles;
+            profiles.forEach(p=>{
+              profilesAll.push(p);
+            })
+        }
+    });
+  });
+  console.log(profilesAll);
+  profilesAll.push(nickname);
 
   var bucketPromise = new AWS.S3({apiVersion: '2006-03-01'}).createBucket({Bucket: bucketName}).promise();
-
   bucketPromise.then(
     function(data) {
       var objectParams = {
@@ -89,7 +171,8 @@ function sendProfile(nickname, username, password){
         Body: JSON.stringify({
           'nickname': nickname, 
           'username': username,
-          'password': password
+          'password': password, 
+          'icon': iconsList[Math.floor(Math.random()*iconsList.length) | 0]
         })};
       var uploadPromise = new AWS.S3({apiVersion: '2006-03-01'}).putObject(objectParams).promise();
       uploadPromise.then(
@@ -100,18 +183,25 @@ function sendProfile(nickname, username, password){
     function(err) {
       console.error(err, err.stack);
   });
-  // new Promise((resolve, reject) => {
-  //   new AWS.S3({apiVersion: '2006-03-01'}).getObject({Bucket: 'idk-what-it-wants', Key: keyName}, function (err, data) {
-  //       if (err) {
-  //           reject(err);
-  //       } else {
-  //           console.log("Successfully dowloaded data from  bucket");
-  //           var object = JSON.parse(data.Body.toString());
-  //           console.log(object.nickname);
-  //           resolve(data);
-  //       }
-  //   });
-  // });
+
+  var bucketPromise = new AWS.S3({apiVersion: '2006-03-01'}).createBucket({Bucket: bucketNameProfList}).promise();
+  bucketPromise.then(
+    function(data) {
+      var objectParams = {
+        Bucket: bucketNameProfList, 
+        Key: profilesListKeyName, 
+        Body: JSON.stringify({
+          'profiles': profilesAll
+        })};
+      var uploadPromise = new AWS.S3({apiVersion: '2006-03-01'}).putObject(objectParams).promise();
+      uploadPromise.then(
+        function(data) {
+          console.log("Successfully uploaded data to " + bucketName + "/" + keyName);
+        });
+  }).catch(
+    function(err) {
+      console.error(err, err.stack);
+  });
 }
 
 

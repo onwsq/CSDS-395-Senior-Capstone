@@ -7,6 +7,7 @@
 <meta charset="utf-8">
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 <link rel="stylesheet" href="stylesheets/style.css">
+<link href="//netdna.bootstrapcdn.com/font-awesome/6.3.0/css/font-awesome.css" rel="stylesheet">
 <head>
     <nav class="navbar navbar-default">
       <div class="container">
@@ -21,16 +22,33 @@
       </div>
     </nav>
 </head>
-<div class="usersbody">
-    <div class="positionProfileButton">
-        <button class="addProfileButton" role="button" onclick="onClickEvent()">Add Profile</button>
+<div class="usersbody" id="userbody">
+  <div class="positionProfileButton" id="positionProfileButton">
+      <button class="addProfileButton" role="button" onclick="onClickEvent()">Add Profile</button>
+  </div><br><br>
+  <div class="container" id="profilescontainer">
+    <h1>Existing Profiles</h1>
+    <div class="rowexisting" id="rowprofiles">
+      <% if(newProfile == 'yes'){ %>
+        <div class="popup"><h2>Profile Created</h2><a class="close" href="/users">&times;</a><div class="content">The profile has been saved and will be available for selection.</div></div>
+      <% } %>
+      <% if(newProfile == 'exists'){ %>
+        <div class="popup"><h2>Profile Not Created</h2><a class="close" href="/users">&times;</a><div class="content">This nickname is taken. View the list of existing nicknames here and try again.</div></div>
+      <% } if(newProfile == 'no') {%>
+        <% for(var i = 0 ; i < algorithmlist.length ; i++) { %>
+          <label>
+            <div class="icon-boxexisting">
+              <i class='<%=algorithmlist[i][1]%>'></i>
+              <span><%=algorithmlist[i][0]%></span>
+            </div>
+          </label>
+        <% } %>
+      <% } %>
     </div>
+  </div>
 </div>
 
-
-
-
-<script> //separate
+<script> 
   function onClickEvent(){
     location.href = "http://localhost:8888/newprofile";
     console.log(window.href);
