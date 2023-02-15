@@ -30,8 +30,8 @@ app.get('/', function(req, res, next) {
   res.render('homepage', { title: 'Express' });
 });
 
-app.get('/contact', function(req, res, next) {
-  res.render('contact', { title: 'Express' });
+app.get('/about', function(req, res, next) {
+  res.render('about', { title: 'Express' });
 });
 
 app.get('/users', async function(req, res, next) {
