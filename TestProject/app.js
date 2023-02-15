@@ -15,6 +15,8 @@ AWS.config.getCredentials(function(err) {
   }
 });
 
+var iconsList = ['fa-solid fa-hippo', 'fa-solid fa-otter', 'fa-solid fa-paw', 'fa-solid fa-cow', 'fa-solid fa-fish', 'fa-solid fa-dog', 'fa-solid fa-worm', 'fa-solid fa-horse', 'fa-solid fa-frog', 'fa-solid fa-cat', 'fa-solid fa-dove'];
+
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
@@ -44,7 +46,6 @@ app.get('/newprofile', async function(req, res, next) {
   res.render('newprofile', { algorithmlist: algorithmlist,title: 'Express' });
 });
 
-var iconsList = ['fa-solid fa-hippo', 'fa-solid fa-otter', 'fa-solid fa-paw', 'fa-solid fa-cow', 'fa-solid fa-fish', 'fa-solid fa-dog', 'fa-solid fa-worm', 'fa-solid fa-horse', 'fa-solid fa-frog', 'fa-solid fa-cat', 'fa-solid fa-dove'];
 app.get('/algorithm', async function(req, res, next) {
   var algorithmlist = await getProfiles();
   console.log(algorithmlist);
