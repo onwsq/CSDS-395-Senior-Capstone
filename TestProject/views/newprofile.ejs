@@ -21,7 +21,6 @@
       </div>
     </nav>
 </head> 
-
 <div class="newprofilebody">
 <div class="box">
 	<form method="post" action="/newprofile">
@@ -42,10 +41,34 @@
       <input type="file" accept=".csv" id="watchhistory" required=""/>
       <label>Watch History (csv file)</label>
     </div>
+    <input type="hidden" id="edit" name="edit" value="false">
 		<button type="submit" class="btn">submit</button>
 </form>	
 </div>
 </div>
 
+<script>
+  var parser = new URL(window.location.href);
+  console.log(parser.search);
+  var foundvariable = parser.search.toString();
+  var splitvar = foundvariable.split("?");
+  console.log(splitvar);
+  var splitvar2 = splitvar[1].split("=");
+  var editting = splitvar2[1];
+  if(editting == 'true'){
+    var name = splitvar[2];
+    var name2 = name.split("=");
+    console.log(name2);
+    (document.getElementById("nickname")).value = name2[1];
+    var profiles = <%- JSON.stringify(algorithmlist) %>;
+    for(var i = 0; i < profiles.length ; i++){
+      if(profiles[i][0] == name2[1]){
+        (document.getElementById("password")).value = profiles[i][2];
+        (document.getElementById("username")).value = profiles[i][3];
+        (document.getElementById("edit")).value = "true";
+      }
+    }
+  }
+</script>
 </html>
 

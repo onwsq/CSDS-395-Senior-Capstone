@@ -39,8 +39,9 @@ app.get('/users', async function(req, res, next) {
   res.render('users', { algorithmlist: algorithmlist, newProfile: 'no', title: 'Express' });
 });
 
-app.get('/newprofile', function(req, res, next) {
-  res.render('newprofile', { title: 'Express' });
+app.get('/newprofile', async function(req, res, next) {
+  var algorithmlist = await getProfiles();
+  res.render('newprofile', { algorithmlist: algorithmlist,title: 'Express' });
 });
 
 var iconsList = ['fa-solid fa-hippo', 'fa-solid fa-otter', 'fa-solid fa-paw', 'fa-solid fa-cow', 'fa-solid fa-fish', 'fa-solid fa-dog', 'fa-solid fa-worm', 'fa-solid fa-horse', 'fa-solid fa-frog', 'fa-solid fa-cat', 'fa-solid fa-dove'];
@@ -60,6 +61,9 @@ app.post('/newprofile', async function(req, res, next) {
       flag = true;
     }
   })
+  if(req.body.edit == "true"){
+    flag = false;
+  }
   if(flag){
     res.render('users', {algorithmlist: algorithmlist, newProfile: 'exists', title: 'Express' });
   }else{
@@ -125,7 +129,7 @@ async function getProfiles(){
           } else {
               console.log("Successfully dowloaded data from bucket");
               var object = JSON.parse(data.Body.toString());
-              listtosend.push([object.nickname, object.icon]);
+              listtosend.push([object.nickname, object.icon, object.password, object.username]);
               resolve(data);
           }
       });
