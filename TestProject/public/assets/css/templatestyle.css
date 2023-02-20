@@ -777,7 +777,7 @@ hr {
 ------------------------------------*/
 .breadcrumb-area {
     position: relative;
-    background-image: url('../img/breadcrumb.png');
+    background-image: url('../img/background1.jpg');
     background-repeat: no-repeat;
     background-position: center;
     background-size: cover;
@@ -1275,6 +1275,31 @@ hr {
 .details-author a {
     margin-left: 20px;
 }
+
+/* homepage algorithm button */
+.positionAlgorithmButton{
+    margin: 0;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    -ms-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+}
+
+.addAlgorithmButton {
+    --b: 3px;   /* border thickness */
+    --s: .45em; /* size of the corner */
+    --color: #D81F26;
+}
+
+.homepagebody{
+    /* background-color: #e3dac9; */
+    /* background-image: url("background1.jpg"); */
+    height: 100vh;
+    background-size: cover;
+  }
+
+
 /*----------------------------------
 ---------  blog details PAGE CSS END --------
 -----------------------------------*/
