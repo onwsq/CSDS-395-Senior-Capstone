@@ -41,6 +41,10 @@ app.get('/users', async function(req, res, next) {
   res.render('users', { algorithmlist: algorithmlist, newProfile: 'no', title: 'Express' });
 });
 
+app.get('/results', function(req, res, next) {
+  res.render('results', { title: 'Express' });
+});
+
 app.get('/newprofile', async function(req, res, next) {
   var algorithmlist = await getProfiles();
   res.render('newprofile', { algorithmlist: algorithmlist,title: 'Express' });
@@ -51,6 +55,7 @@ app.get('/algorithm', async function(req, res, next) {
   console.log(algorithmlist);
   res.render('algorithm', {algorithmlist: algorithmlist, title: 'Express' });
 });
+
 
 app.post('/newprofile', async function(req, res, next) {
   var algorithmlist = await getProfiles();
