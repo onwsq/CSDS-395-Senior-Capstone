@@ -119,47 +119,74 @@ def get_actor_movies(actor_name):
 
     return movies
 
-def getMoviesByGenre(genre):
+def getMoviesByGenre(genre,N):
     # get the top 50 movies in the specified genre
     top50 = ia.get_top50_movies_by_genres(genre)
     print(top50)
     # extract the top 5 movies from the list
-    top5 = [movie["title"] for movie in top50[:5]]
+    topN = [movie["title"] for movie in top50[:N]]
 
     # print the top 5 movies
-    print(f"Top 5 movies in the {genre} genre:")
-    for i, movie in enumerate(top5):
+    print(f"\nTop {N} movies in the {genre} genre:")
+    for i, movie in enumerate(topN):
         print(f"{i + 1}. {movie}")
+
+
+def getTopGenres(username):
+    data = pd.read_csv('commonGenres.csv')
+    # getting top 3 genres
+    top_genres = data['genre'].head(3)
+    topGenresList = top_genres.tolist()
+    print(topGenresList)
+    return topGenresList
 
 
 def main():
     username = input("Enter your username: ")
-    #TODO: Give the most popular movies within the users top genres.
-    # Look up the user's username to find their profile and get their top genres
-    # show the top 3-5? movies from their top genres
+    #TODO: Look up the user's username to find their profile and get their top genres
     # give links to the movies
+    print("\nMovie suggestions based on your top genres: ")
+    topGenresList = getTopGenres(username)
+    for genre in topGenresList:
+        getMoviesByGenre(genre, 3)
 
-    # if they dont want any of those movies:
-    actor_name = getActorPref()
-    if actor_name is not None:
-        actorMoviesList = get_actor_movies(actor_name)
-        print(f"\nHere are movies {actor_name} is in:")
-        print(actorMoviesList)
-    else:
-        genre = getGenrePref()
-        releaseYearRange = getReleaseYearRange()
-        durationRange = getDurationRange()
 
-        genreMoviesList = getMoviesByGenre(genre)
-        print(genreMoviesList)
+    while True:
+        pref = input("\nWould rather have movie suggestions based on your preferences? Enter y/n:")
+        if pref in ["y", "n"]:
+            if pref in ["y"]:
+                # if they dont want any of those movies:
+                actor_name = getActorPref()
+                # if they have an actor preference
+                if actor_name is not None:
+                    actorMoviesList = get_actor_movies(actor_name)
+                    print(f"\nHere are movies {actor_name} is in:")
+                    print(actorMoviesList)
+                    break
+                # if they don't have an actor preference
+                else:
+                    #TODO: currently just giving the top 5 movies in the genre they prefer. Need to add release year range and duration range
+                    genre = getGenrePref()
+                    releaseYearRange = getReleaseYearRange()
+                    durationRange = getDurationRange()
 
-    print("\nYour preferences: ")
-    if actor_name:
-        print(f"Actor: {actor_name}")
-    else:
-        print(f"Genre: {genre}")
-        print(f"Release Year Range: {releaseYearRange}")
-        print(f"Duration Range: {durationRange}")
+                    genreMoviesList = getMoviesByGenre(genre, 5)
+                    print(genreMoviesList)
+                    break
+
+                print("\nYour preferences: ")
+                if actor_name:
+                    print(f"Actor: {actor_name}")
+                else:
+                    print(f"Genre: {genre}")
+                    print(f"Release Year Range: {releaseYearRange}")
+                    print(f"Duration Range: {durationRange}")
+            else:
+                break
+        else:
+            print("Enter a valid response (y or n): ")
+
+
 
 ia = IMDb()
 main()

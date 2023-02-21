@@ -30,6 +30,15 @@ print(len(cleaned_genres))
 common_genres = [genre for genre, val in Counter(cleaned_genres).most_common()]
 print(common_genres)
 
+# put common genres in csv file
+with open('commonGenres.csv', mode='w', newline='') as file:
+    writer = csv.writer(file)
+    # write the header row
+    writer.writerow(['genre'])
+    # write each genre as a new row
+    for genre in common_genres:
+        writer.writerow([genre])
+
 # print(df[0][1])
 #Avatar: the last airbender :
 # for i in df:
