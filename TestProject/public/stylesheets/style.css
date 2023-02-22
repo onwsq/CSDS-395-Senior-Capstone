@@ -99,11 +99,23 @@
   color: #fff;
 }
 
+.homepagecontent{
+  color:rgb(47, 47, 47);
+  font-size: 22px;
+  margin: 0;
+  position: absolute;
+  top: 35%;
+  left: 50%;
+  text-align: center;
+  -ms-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+}
+
 /* homepage algorithm button */
 .positionAlgorithmButton{
   margin: 0;
   position: absolute;
-  top: 50%;
+  top: 60%;
   left: 50%;
   -ms-transform: translate(-50%, -50%);
   transform: translate(-50%, -50%);
