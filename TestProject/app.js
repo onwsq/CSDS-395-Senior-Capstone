@@ -6,6 +6,8 @@ var logger = require('morgan');
 var bodyParser = require('body-parser');
 var app = express();
 var AWS = require("aws-sdk");
+var fs = require('fs');
+var formidable = require("formidable");
 
 AWS.config.getCredentials(function(err) {
   if (err) console.log(err.stack);
@@ -53,25 +55,54 @@ app.get('/algorithm', async function(req, res, next) {
 });
 
 app.post('/newprofile', async function(req, res, next) {
-  var algorithmlist = await getProfiles();
-  var flag = false;
-  algorithmlist.forEach(a=>{
-    console.log(a[0]);
-    console.log(req.body.nickname);
-    if(a[0] == req.body.nickname){
-      flag = true;
-    }
+  
+  new formidable.IncomingForm().parse(req, async (err, fields, files) => {
+      var bucketName = 'added-new-person';
+      var keyNameCSV = fields.nickname + 'csvfile.csv';
+    console.log(fields)
+      var oldPath =  files.watchhistory.filepath;
+      var newPath = __dirname + '/profiles/' + fields.nickname;
+      var rawData = fs.readFileSync(oldPath)
+      console.log(newPath)
+      var bucketPromise = new AWS.S3({apiVersion: '2006-03-01'}).createBucket({Bucket: bucketName}).promise();
+      bucketPromise.then(
+        function(data) {
+          var objectParams = {
+            Bucket: bucketName, 
+            Key: keyNameCSV, 
+            Body: rawData};
+          var uploadPromise = new AWS.S3({apiVersion: '2006-03-01'}).putObject(objectParams).promise();
+          uploadPromise.then(
+            function(data) {
+              console.log("Successfully uploaded data to " + bucketName + "/" + keyNameCSV);
+            });
+      }).catch(
+        function(err) {
+          console.error(err, err.stack);
+      });
+
+
+      var algorithmlist = await getProfiles();
+      var flag = false;
+      algorithmlist.forEach(a=>{
+        console.log(a[0]);
+        console.log(fields.nickname);
+        if(a[0] == fields.nickname){
+          flag = true;
+        }
+      })
+      if(fields.edit == "true"){
+        flag = false;
+      }
+      if(flag){
+        res.render('users', {algorithmlist: algorithmlist, newProfile: 'exists', title: 'Express' });
+      }else{
+        await sendProfile(fields.nickname, fields.username, fields.password, fields.watchhistory);
+        var algorithmlist2 = await getProfiles();
+        res.render('users', {algorithmlist: algorithmlist2, newProfile: 'yes', title: 'Express' });
+      }
   })
-  if(req.body.edit == "true"){
-    flag = false;
-  }
-  if(flag){
-    res.render('users', {algorithmlist: algorithmlist, newProfile: 'exists', title: 'Express' });
-  }else{
-    await sendProfile(req.body.nickname, req.body.username, req.body.password);
-    var algorithmlist2 = await getProfiles();
-    res.render('users', {algorithmlist: algorithmlist2, newProfile: 'yes', title: 'Express' });
-  }
+  
 });
 
 // catch 404 and forward to error handler
@@ -143,11 +174,12 @@ async function getProfiles(){
   })
 }
 
-function sendProfile(nickname, username, password){
+function sendProfile(nickname, username, password, csvfile){
   var bucketNameProfList = 'profiles-list'
   var profilesListKeyName = 'profilenames.json'
   var bucketName = 'added-new-person';
   var keyName = nickname + 'userprofile.json';
+  var keyNameCSV = nickname + 'csvfile';
   var profilesAll = [];
 
   new Promise((resolve, reject) => {
@@ -207,6 +239,7 @@ function sendProfile(nickname, username, password){
     function(err) {
       console.error(err, err.stack);
   });
+
 }
 
 
