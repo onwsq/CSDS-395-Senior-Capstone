@@ -65,46 +65,12 @@ def getDurationRange():
 
 
 def get_actor_movies(actor_name):
-    '''
-
     # search for the actor by name
     search_results = ia.search_person(actor_name)
-    print(search_results)
-
-    # get the person ID for the first search result
-    person_id = search_results[0].getID()
-    print(person_id)
-    # get the person object for that ID
-    person = ia.get_person(person_id)
-
-    # update the person object with filmography data
-    ia.update(person, 'filmography')
-
-    movies = []
-    # loop through the filmography and print the titles of the movies
-    for credit_type in person['filmography']:
-        if credit_type == 'actor':
-            for movie in person['filmography'][credit_type]:
-                title = movie['title']
-                movies.append(title)
-
-    return movies
-'''
-
-    # search for the actor by name
-    search_results = ia.search_person(actor_name)
-
-    '''# print out the IDs of the search results
-    for person in search_results:
-        print(person.personID, person['name'])
-    '''
-
     # get the person ID
     person_id = search_results[0].personID
-    #print(person_id)
     # get the person object for that ID
     person = ia.get_person(person_id)
-    #print(person)
     # update the person object with filmography data
     ia.update(person, 'filmography')
 
@@ -115,7 +81,22 @@ def get_actor_movies(actor_name):
             for movie in person['filmography'][credit_type]:
                 title = movie['title']
                 movies.append(title)
-                #print(title)
+
+    # if the movies list is empty (actor wasn't found by .personID)
+    if not movies:
+        # get the person ID using .getID() for the first search result
+        person_id = search_results[0].getID()
+        # get the person object for that ID
+        person = ia.get_person(person_id)
+        # update the person object with filmography data
+        ia.update(person, 'filmography')
+        movies = []
+        # loop through the filmography and print the titles of the movies
+        for credit_type in person['filmography']:
+            if credit_type == 'actor':
+                for movie in person['filmography'][credit_type]:
+                    title = movie['title']
+                    movies.append(title)
 
     return movies
 
