@@ -97,20 +97,18 @@ while i < len(shorter_list) and len(exact_match) < 3:
         i-=1
     i+=1
 
-
-shorter_list = [genre for t in shorter_list for genre in t]
-longer_list = [genre for t in longer_list for genre in t]
-shorter_list = [*set(shorter_list)]
-longer_list = [*set(longer_list)]
-print("longer list: "+str(longer_list))
-print("shorter list: "+str(shorter_list))
-
-for val in shorter_list:
-    if val in longer_list:
-        one_match.append(val)
-
-
 if len(exact_match) < 3:
+    shorter_list = [genre for t in shorter_list for genre in t]
+    longer_list = [genre for t in longer_list for genre in t]
+    shorter_list = [*set(shorter_list)]
+    longer_list = [*set(longer_list)]
+    print("longer list: "+str(longer_list))
+    print("shorter list: "+str(shorter_list))
+
+    for val in shorter_list:
+        if val in longer_list:
+            one_match.append(val)
+
     more_needed = 3 - len(exact_match)
     print("more needed:"+str(more_needed))
     if len(one_match) >= more_needed:
@@ -119,6 +117,6 @@ if len(exact_match) < 3:
         temp = one_match
     fin = np.concatenate((exact_match, temp))
 else:
-    fin = exact_match
+    fin = exact_match[0:3]
 
 print(fin)
