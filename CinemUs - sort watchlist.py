@@ -16,7 +16,7 @@ shows_val = 0
 shows_first_bit = []
 movie_genres = {}
 parse_dates = ['Date']
-data = pd.read_csv('NetflixViewingHistory.csv', parse_dates=parse_dates)
+data = pd.read_csv('OliviaNetflixViewingHistory.csv', parse_dates=parse_dates)
 df = data.values
 timestamp = pd.Timestamp(datetime(2021, 10, 10))
 currentday = timestamp.today()
@@ -26,7 +26,7 @@ total_runtime = 0
 #Avatar: the last airbender :
 for i in df:
     # for the last 3 months
-    if (currentday - i[1]).days < 90: 
+    if (currentday - i[1]).days < 150: 
         shows_keywords = False
 
         # if there's more than 1 colon it's prob a tv show
@@ -64,6 +64,7 @@ for i in df:
                 shows[updated_str][0] = shows[updated_str][0]+1
                 shows_val += 1
         else:
+            print(updated_str)
             if shows_keywords == True:
                 shows.update({updated_str:[1]})
                 shows_val += 1
@@ -93,7 +94,7 @@ for i in df:
 
 
 print(total_runtime)
-pd.DataFrame.from_dict(data=movies, orient='index').to_csv('movies.csv', header=True)
+pd.DataFrame.from_dict(data=movies, orient='index').to_csv('0_movies.csv', header=True)
 pd.DataFrame.from_dict(data=shows, orient='index', columns=['Occurrences']).to_csv('shows.csv', header=True)
 
 
