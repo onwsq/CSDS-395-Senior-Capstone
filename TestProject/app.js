@@ -58,6 +58,18 @@ app.get('/algorithm', async function(req, res, next) {
   res.render('algorithm', {algorithmlist: algorithmlist, title: 'Express' });
 });
 
+app.post('/algorithm', async function(req, res, next) {
+  var resultsObjects = await getResultsList();
+  var tosend = [];
+  var item1 = await getResultFile(resultsObjects[0]);
+  var item2 = await getResultFile(resultsObjects[1]);
+  tosend.push([item1['title'], item1['description']])
+  tosend.push([item2['title'], item2['description']])
+  console.log(tosend)
+  res.render('results', { results: tosend, title: 'Express' });
+  
+});
+
 
 app.post('/newprofile', async function(req, res, next) {
   
@@ -125,6 +137,52 @@ app.use(function(err, req, res, next) {
   res.status(err.status || 500);
   res.render('error');
 });
+
+function getResultsList(){
+  var bucket = 'movieresultsbucket';
+  var keys = [];
+  new Promise((resolve, reject) => {
+    new AWS.S3({apiVersion: '2006-03-01'}).listObjects({Bucket: bucket}, function (err, data) {
+        if (err) {
+
+        } else {
+            console.log("Successfully dowloaded data from bucket");
+            data.Contents.map(d=>{
+              keys.push(d.Key);
+            })
+            
+        }
+    });
+    //console.log(keys)
+  });
+  return new Promise(resolve=>{
+    setTimeout(()=>{
+      resolve(keys);
+    }, 2000);
+  })
+
+}
+
+function getResultFile(key){
+  var bucket = 'movieresultsbucket';
+  var ob;
+  var obs = [];
+  
+  new Promise((resolve, reject) => {
+    new AWS.S3({apiVersion: '2006-03-01'}).getObject({Bucket: bucket, Key: key}, function (err, data) {
+        if (err) {
+        } else {
+          ob = JSON.parse(data.Body.toString());
+        }
+    });
+    //console.log(keys)
+  });
+  return new Promise(resolve=>{
+    setTimeout(()=>{
+      resolve(ob);
+    }, 2000);
+  })
+}
 
 function getProfListBucket(){
   var bucketNameProfList = 'profiles-list'

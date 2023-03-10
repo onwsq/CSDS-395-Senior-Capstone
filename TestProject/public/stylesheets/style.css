@@ -35,11 +35,13 @@
   color: white !important;
 }
 
-.homepagebody{
+/* .homepagebody{
+  position: relative;
+  margin-top:100px;
   background-color: #e3dac9;
-  height: 100vh;
+  height: 100vh ;
   background-size: cover;
-}
+} */
 
 .usersbody{
   background-color: #e3dac9;
@@ -99,17 +101,6 @@
   color: #fff;
 }
 
-.homepagecontent{
-  color:rgb(47, 47, 47);
-  font-size: 22px;
-  margin: 0;
-  position: absolute;
-  top: 35%;
-  left: 50%;
-  text-align: center;
-  -ms-transform: translate(-50%, -50%);
-  transform: translate(-50%, -50%);
-}
 
 /* homepage algorithm button */
 .positionAlgorithmButton{
@@ -166,6 +157,7 @@ body{
 	height:100vh;
 	font-family: 'Noto Sans', sans-serif;
 }
+
 .text-center{
 	color:#fff;	
 	text-transform:uppercase;
