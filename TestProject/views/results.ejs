@@ -7,13 +7,13 @@
 		<section class="hero-area" id="home">
 			<div class="container">
 				<div class="hero-area-slider">
+					<% for(var i = 0 ; i < results.length; i++) { %>
 					<div class="row hero-area-slide">
 						<div class="col-lg-6 col-md-5">
 							<div class="hero-area-content">
 								<img src="assets/img/slide2.png" alt="about" />
 							</div>
 						</div>
-						<% for(var i = 0 ; i < results.length; i++) { %>
 						<div class="col-lg-6 col-md-7">
 							<div class="hero-area-content pr-50">
 								<h2><%=results[i][0]%></h2>
