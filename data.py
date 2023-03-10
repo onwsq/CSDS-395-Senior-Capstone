@@ -45,3 +45,15 @@ for profile in profilesList:
     print(csvfilecontent)
     print('\n')
     
+    result1 = {
+        "title": "aosdfina",
+        "description": "alkfndalsnfalsfnlasdfnasdfnaslfnas"
+    }
+    result2 = {
+        "title": "lkflkdnsga",
+        "description": "ogfknsdlgkfsndkglfdns"
+    }
+    result1json = json.dumps(result1)
+    result2json = json.dumps(result2)
+    objecttosend = s3.Object('movieresultsbucket', 'results2.json')
+    sent = objecttosend.put(Body=result2json)
