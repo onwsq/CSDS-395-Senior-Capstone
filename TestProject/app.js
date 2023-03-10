@@ -63,8 +63,10 @@ app.post('/algorithm', async function(req, res, next) {
   var tosend = [];
   var item1 = await getResultFile(resultsObjects[0]);
   var item2 = await getResultFile(resultsObjects[1]);
+  var item3 = await getResultFile(resultsObjects[2]);
   tosend.push([item1['title'], item1['description']])
   tosend.push([item2['title'], item2['description']])
+  tosend.push([item3['title'], item3['description']])
   console.log(tosend)
   res.render('results', { results: tosend, title: 'Express' });
   
