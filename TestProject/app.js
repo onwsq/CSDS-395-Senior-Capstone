@@ -16,6 +16,8 @@ AWS.config.getCredentials(function(err) {
     console.log("Access key:", AWS.config.credentials.accessKeyId);
   }
 });
+AWS.config.region = 'us-east-1';
+const lambda = new AWS.Lambda({ region: 'us-east-1'});
 
 var iconsList = ['fa-solid fa-hippo', 'fa-solid fa-otter', 'fa-solid fa-paw', 'fa-solid fa-cow', 'fa-solid fa-fish', 'fa-solid fa-dog', 'fa-solid fa-worm', 'fa-solid fa-horse', 'fa-solid fa-frog', 'fa-solid fa-cat', 'fa-solid fa-dove'];
 
@@ -59,14 +61,26 @@ app.get('/algorithm', async function(req, res, next) {
 });
 
 app.post('/algorithm', async function(req, res, next) {
+  new formidable.IncomingForm().parse(req, async (err, fields, files) => {
+    var selected = Object.keys(fields);
+    await putAlgorithmSelection(selected);
+  })
+
+  const params = {
+    FunctionName: "arn:aws:lambda:us-east-1:315826743513:function:data",
+    InvocationType: "RequestResponse",
+    Payload: JSON.stringify({})
+  };
+  
+  await lambda.invoke(params).promise();
+  
+  
   var resultsObjects = await getResultsList();
   var tosend = [];
-  var item1 = await getResultFile(resultsObjects[0]);
-  var item2 = await getResultFile(resultsObjects[1]);
-  var item3 = await getResultFile(resultsObjects[2]);
-  tosend.push([item1['title'], item1['description']])
-  tosend.push([item2['title'], item2['description']])
-  tosend.push([item3['title'], item3['description']])
+  for(var i = 0; i < resultsObjects.length; i++){
+    var item1 = await getResultFile(resultsObjects[i]);
+    tosend.push([item1['title'], item1['description']]);
+  }
   console.log(tosend)
   res.render('results', { results: tosend, title: 'Express' });
   
@@ -163,6 +177,27 @@ function getResultsList(){
     }, 2000);
   })
 
+}
+
+function putAlgorithmSelection(profilesneeded){
+  var bucketPromise = new AWS.S3({apiVersion: '2006-03-01'}).createBucket({Bucket:'wantedprofiles'}).promise();
+  bucketPromise.then(
+    function(data) {
+      var objectParams = {
+        Bucket: 'wantedprofiles', 
+        Key: 'algorithmnicknames.json', 
+        Body: JSON.stringify({
+          'nicknames': profilesneeded
+        })};
+      var uploadPromise = new AWS.S3({apiVersion: '2006-03-01'}).putObject(objectParams).promise();
+      uploadPromise.then(
+        function(data) {
+          console.log("Successfully uploaded data to bucket wantedprofiles");
+        });
+  }).catch(
+    function(err) {
+      console.error(err, err.stack);
+  });
 }
 
 function getResultFile(key){

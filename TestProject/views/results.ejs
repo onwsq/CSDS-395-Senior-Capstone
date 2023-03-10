@@ -7,15 +7,16 @@
 		<section class="hero-area" id="home">
 			<div class="container">
 				<div class="hero-area-slider">
+					<% for(var i = 0 ; i < results.length ; i++) { %>
 					<div class="row hero-area-slide">
 						<div class="col-lg-6 col-md-5">
 							<div class="hero-area-content">
-								<img src="assets/img/slide2.png" alt="about" />
+								<img src="assets/img/slide1.png" alt="about" />
 							</div>
 						</div>
 						<div class="col-lg-6 col-md-7">
 							<div class="hero-area-content pr-50">
-								<h2>dsf;alsm</h2>
+								<h2><%=results[i][0]%></h2>
 								<div class="review">
 									<div class="author-review">
 										<i class="icofont icofont-star"></i>
@@ -26,7 +27,7 @@
 									</div>
 									<h4>180k voters</h4>
 								</div>
-								<p>asdf</p>
+								<p><%=results[i][1]%></p>
 								<h3>Cast:</h3>
 								<div class="slide-cast">
 									<div class="single-slide-cast">
@@ -61,18 +62,19 @@
 							</div>
 						</div>
 					</div>
+					<% } %>
 				</div>
 				<div class="hero-area-thumb">
 					<div class="thumb-prev">
 						<div class="row hero-area-slide">
 							<div class="col-lg-6">
 								<div class="hero-area-content">
-									<img src="assets/img/slide3.png" alt="about" />
+									<img src="assets/img/slide1.png" alt="about" />
 								</div>
 							</div>
 							<div class="col-lg-6">
 								<div class="hero-area-content pr-50">
-									<h2>results[1][0]</h2>
+									<h2><%=results[1][0]%></h2>
 									<div class="review">
 										<div class="author-review">
 											<i class="icofont icofont-star"></i>
@@ -83,7 +85,7 @@
 										</div>
 										<h4>180k voters</h4>
 									</div>
-									<p>results[1][1]</p>
+									<p><%=results[1][1]%></p>
 									<h3>Cast:</h3>
 									<div class="slide-cast">
 										<div class="single-slide-cast">
@@ -128,7 +130,7 @@
 							</div>
 							<div class="col-lg-6">
 								<div class="hero-area-content pr-50">
-									<h2>results[results.length-1][0]</h2>
+									<h2><%=results[results.length-1][0]%></h2>
 									<div class="review">
 										<div class="author-review">
 											<i class="icofont icofont-star"></i>
@@ -139,7 +141,7 @@
 										</div>
 										<h4>180k voters</h4>
 									</div>
-									<p>results[results.length-1][1]</p>
+									<p><%=results[results.length-1][1]%></p>
 									<h3>Cast:</h3>
 									<div class="slide-cast">
 										<div class="single-slide-cast">

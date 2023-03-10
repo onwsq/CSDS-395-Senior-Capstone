@@ -16,14 +16,15 @@ for bucket in s3.buckets.all():
 print('\n')
 
 
-#now get only the profile-list: the list of nicknames that exist 
+#now get only the wanted nicknames for the algorithm: the list of nicknames that exist 
                             #bucket name    #file name
-content_object = s3.Object('profiles-list','profilenames.json')
+content_object = s3.Object('wantedprofiles','algorithmnicknames.json')
 file_content = content_object.get()['Body'].read().decode('utf-8')
 json_content = json.loads(file_content)
-profilesList = json_content['profiles']
+profilesList = json_content['nicknames']
 
-
+for prof in profilesList: 
+    print(prof)
 #for each nickname, you can get the individual profile information associated with the nickname
 #the nickname will also have the uploaded csv file - watch history that we can get
 for profile in profilesList: 
@@ -57,8 +58,13 @@ for profile in profilesList:
         "title": "vbgfbgf",
         "description": "bglsnblfksdnbsdlkfnglkdfsnglksdngksllskgndflsgnsdfklg"
     }
+    result4 = {
+        "title": "result4",
+        "description": "result four description"
+    }
     result1json = json.dumps(result1)
     result2json = json.dumps(result2)
     result3json = json.dumps(result3)
-    objecttosend = s3.Object('movieresultsbucket', 'results3.json')
-    sent = objecttosend.put(Body=result3json)
+    result4json = json.dumps(result4)
+    objecttosend = s3.Object('movieresultsbucket', 'results4.json')
+    sent = objecttosend.put(Body=result4json)

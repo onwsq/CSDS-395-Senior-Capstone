@@ -26,10 +26,11 @@
 <div class="algorithmbody">
     <div class="container">
         <h1>Profile Selection</h1>
+        <form method="post" id="algorithmSelectForm" action="/algorithm" enctype="multipart/form-data">
         <div class="row" id="rowprofiles">
           <% for(var i = 0 ; i < algorithmlist.length ; i++) { %>
             <label>
-              <input type="checkbox" name="" />
+              <input type="checkbox" name="<%=algorithmlist[i][0]%>" id="<%=algorithmlist[i][0]%>"/>
               <div class="icon-box">
                 <i class='<%=algorithmlist[i][1]%>'></i>
                 <span><%=algorithmlist[i][0]%>
@@ -39,7 +40,6 @@
           <% } %>
         </div>
       </div>
-    <form method="post" id="algorithmSelectForm" action="/algorithm">
     <button type="submit" class="btnAlgorithm">submit</button>
   </form>
 </div>
