@@ -2,52 +2,45 @@
 <!DOCTYPE html>
 <html lang="en">
 
-<meta charset="utf-8">
-<title>User Profiles</title>
-<meta charset="utf-8">
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-<link rel="stylesheet" href="stylesheets/style.css">
-<link href="//netdna.bootstrapcdn.com/font-awesome/6.3.0/css/font-awesome.css" rel="stylesheet">
+
 <head>
-    <nav class="navbar navbar-default">
-      <div class="container">
-        <div class="navbar-header">
-          <p class="navbar-brand">CinemUs</p>
-        </div>
-        <ul class="nav navbar-nav navbar-right">
-          <li id="home"><a href="/">Home</a></li>
-          <li id="userprofiles"><a href="/users">User Profiles</a></li>
-          <li id="algorithm"><a href="/algorithm">Begin Algorithm</a></li>
-          <li id="about"><a href="/about">About</a></li>
-        </ul>
-      </div>
-    </nav>
+	<%- include('header.ejs') %>
 </head>
-<div class="usersbody" id="userbody">
+
+
+<!-- <div class = "algorithmbody"> -->
+  <section class="hero-area-profiles" id="home">
+
   <div class="positionProfileButton" id="positionProfileButton">
       <button class="addProfileButton" role="button" onclick="onClickEvent()">Add Profile</button>
   </div><br><br>
-  <div class="container" id="profilescontainer">
+  <div class="profiles">
     <h1>Existing Profiles</h1>
-    <div class="rowexisting" id="rowprofiles">
-      <% if(newProfile == 'yes'){ %>
-        <div class="popup"><h2>Profile Created</h2><a class="close" href="/users">&times;</a><div class="content">The profile has been saved and will be available for selection.</div></div>
-      <% } %>
-      <% if(newProfile == 'exists'){ %>
-        <div class="popup"><h2>Not Created</h2><a class="close" href="/users">&times;</a><div class="content">This nickname is taken. View the list of existing nicknames here and try again.</div></div>
-      <% } if(newProfile == 'no') {%>
-        <% for(var i = 0 ; i < algorithmlist.length ; i++) { %>
-          <label onclick="onClickEvent2('<%=algorithmlist[i][0]%>')">
-            <div class="icon-boxexisting">
-              <i class='<%=algorithmlist[i][1]%>'></i>
-              <span><%=algorithmlist[i][0]%></span>
-            </div>
-          </label>
+
+    <div class="container">
+      <div class="rowexisting" id="rowprofiles">
+        <% if(newProfile == 'yes'){ %>
+          <div class="popup"><h2>Profile Created</h2><a class="close" href="/users">&times;</a><div class="content">The profile has been saved and will be available for selection.</div></div>
         <% } %>
-      <% } %>
+        <% if(newProfile == 'exists'){ %>
+          <div class="popup"><h2>Not Created</h2><a class="close" href="/users">&times;</a><div class="content">This nickname is taken. View the list of existing nicknames here and try again.</div></div>
+        <% } if(newProfile == 'no') {%>
+          <% for(var i = 0 ; i < algorithmlist.length ; i++) { %>
+            <label onclick="onClickEvent2('<%=algorithmlist[i][0]%>')">
+              <div class="icon-boxexisting">
+                <i class='<%=algorithmlist[i][1]%>'></i>
+                <span><%=algorithmlist[i][0]%></span>
+              </div>
+            </label>
+          <% } %>
+        <% } %>
+      </div>
     </div>
   </div>
-</div>
+<div>
+</div> 
+
+
 
 <script> 
   function onClickEvent(){
