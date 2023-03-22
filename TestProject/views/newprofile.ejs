@@ -1,0 +1,77 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<meta charset="utf-8">
+<title>New Profile</title>
+<meta charset="utf-8">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<link rel="stylesheet" href="stylesheets/style.css">
+<head>
+    <nav class="navbar navbar-default">
+      <div class="container">
+        <div class="navbar-header">
+          <p class="navbar-brand">CinemUs</p>
+        </div>
+        <ul class="nav navbar-nav navbar-right">
+          <li id="home"><a href="/">Home</a></li>
+          <li id="userprofiles"><a href="/users">User Profiles</a></li>
+          <li id="algorithm"><a href="/algorithm">Begin Algorithm</a></li>
+          <li id="about"><a href="/about">About</a></li>
+        </ul>
+      </div>
+    </nav>
+</head> 
+<div class="newprofilebody">
+<div class="box">
+	<form method="post" id="newProfileForm" action="/newprofile" enctype="multipart/form-data">
+		<span class="text-center">New Profile</span>
+    <div class="input-container">
+      <input type="text" id="nickname" name="nickname" required=""/>
+      <label>Profile Nickname</label>		
+    </div>
+    <div class="input-container">
+      <input type="text" id="username" name="username" required=""/>
+      <label>Username</label>		
+    </div>
+    <div class="input-container">		
+      <input type="password" id="password" name="password" required=""/>
+      <label>Password</label>
+    </div>
+    <div class="input-container">		
+      <input type="file" accept=".csv" id="watchhistory" name="watchhistory" required=""/>
+      <label>Watch History (csv file)</label>
+    </div>
+    <input type="hidden" id="edit" name="edit" value="false">
+		<button type="submit" value="submit" class="btn">submit</button>
+</form>	
+</div>
+</div>
+
+<script>
+  var parser = new URL(window.location.href);
+  console.log(parser.search);
+  var foundvariable = parser.search.toString();
+  var splitvar = foundvariable.split("?");
+  console.log(splitvar);
+  var splitvar2 = splitvar[1].split("=");
+  var editting = splitvar2[1];
+  if(editting == 'true'){
+    var name = splitvar[2];
+    var name2 = name.split("=");
+    console.log(name2);
+    (document.getElementById("nickname")).value = name2[1];
+    var profiles = <%- JSON.stringify(algorithmlist) %>;
+    for(var i = 0; i < profiles.length ; i++){
+      if(profiles[i][0] == name2[1]){
+        (document.getElementById("password")).value = profiles[i][2];
+        (document.getElementById("username")).value = profiles[i][3];
+        (document.getElementById("edit")).value = "true";
+      }
+    }
+  }
+
+</script>
+
+</html>
+

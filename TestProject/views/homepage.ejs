@@ -1,0 +1,50 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<%- include('header.ejs') %>
+
+<!-- <meta charset="utf-8">
+<title>Home Page</title>
+<meta charset="utf-8">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<link rel="stylesheet" href="stylesheets/style.css">
+<head>
+  <nav class="navbar navbar-default">
+    <div class="container">
+      <div class="navbar-header">
+        <p class="navbar-brand">CinemUs</p>
+      </div>
+      <ul class="nav navbar-nav navbar-right">
+        <li id="home"><a href="/">Home</a></li>
+        <li id="userprofiles"><a href="/users">User Profiles</a></li>
+        <li id="algorithm"><a href="/algorithm">Begin Algorithm</a></li>
+        <li id="about"><a href="/about">About</a></li>
+      </ul>
+    </div>
+  </nav>
+</head> -->
+
+  
+<!-- <div class="homepagebody">
+  <div class="homepagecontent">
+    CinemUs is a tool designed to ease the process of selecting movies 
+    with friends. Multiple users share their streaming 
+    profiles and preferences, and the algorithm analyzes the profiles and users' watch histories to
+    produce a list of recommended movies tailored to 
+    the individual or group of watchers. 
+  </div>
+</div> -->
+<div class="try">
+<div class="positionAlgorithmButton" id="positionAlgorithmButton">
+  <button class="addAlgorithmButton" role="button" onclick="redirect()">Algorithm</button>
+</div><br><br><br><br> <br><br> <br><br> <br><br> <br><br> <br><br> 
+
+
+<script>
+  function redirect(){
+    location.href = "http://localhost:8888/algorithm";
+    console.log(window.href);
+  }
+</script>
+</html>
