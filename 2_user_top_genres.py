@@ -12,8 +12,12 @@ from collections import Counter
 ia = imdb.IMDb()
 genres1 = []
 genres2 = []
+# DATA 1 IS USER 1 INFO
+# THIS DATA IS READING CSV CREATED FORM "initial_csv_cleaning.py"
+# BUT WILL PROB BE A DATA BUCKET LATER ON
 data1 = pd.read_csv('o_movies.csv')
 df1 = data1.values
+# DATA 2 IS USER 2 INFO
 data2 = pd.read_csv('a_movies.csv')
 df2 = data2.values
 exact_match = []
@@ -21,6 +25,7 @@ one_match = []
 genres_in_exact_match = []
 index = 0
 min_list = 1
+
 
 
 for i in df1:
@@ -158,3 +163,6 @@ else:
     fin = exact_match[0:3]
 
 print(fin)
+
+# FIN IS LIST OF SUBGENRES/GENRES DEPENDING ON COMMONALITIES
+# NOW NEED TO PROVIDE LIST OF MOVIES

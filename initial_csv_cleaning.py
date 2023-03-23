@@ -16,19 +16,20 @@ shows_val = 0
 shows_first_bit = []
 movie_genres = {}
 parse_dates = ['Date']
+#### THIS IS THE CSV THAT IS BEING READ FOR THE PROFILE ####
 data = pd.read_csv('OliviaNetflixViewingHistory.csv', parse_dates=parse_dates)
 df = data.values
 timestamp = pd.Timestamp(datetime(2021, 10, 10))
 currentday = timestamp.today()
 total_runtime = 0
 
-# print(df[0][1])
-#Avatar: the last airbender :
+
+# going through all entries within csv
 for i in df:
     # for the last 3 months
+    # THIS VALUE WE NEED TO FINALIZE
     if (currentday - i[1]).days < 150: 
         shows_keywords = False
-
         # if there's more than 1 colon it's prob a tv show
         if i[0].count(":") > 1:
             # get rid of everything except first colon
@@ -90,11 +91,15 @@ for i in df:
     
 
 
-            
-
-
 print(total_runtime)
+# CREATING A NEW CSV WITH RELEVANT MOVIE DATA
+# PARAMETER AFTER to_csv IS THE CSV TITLE, PROBABLY HAVE TO MAKE THAT VARIABLE
+# ((RN '0_movies.csv' IS JUST HARD CODED))
+# SEND THIS TO A DATA BUCKET TO STORE INFO??
+# NEED TO ADD TO THIS DATA BUCKET WHEN USERS CHOOSE A MOVIE
 pd.DataFrame.from_dict(data=movies, orient='index').to_csv('0_movies.csv', header=True)
+# CREATING DATA BUCKET FOR SHOWS
+# COMMENTED OUT RN BC NOT RELEVANT
 pd.DataFrame.from_dict(data=shows, orient='index', columns=['Occurrences']).to_csv('shows.csv', header=True)
 
 
