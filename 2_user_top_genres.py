@@ -26,8 +26,6 @@ genres_in_exact_match = []
 index = 0
 min_list = 1
 
-
-
 for i in df1:
     # only watched once
     if i[1] == 1:

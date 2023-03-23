@@ -103,7 +103,8 @@ def get_actor_movies(actor_name):
 def getMoviesByGenre(genre,N):
     # get the top 50 movies in the specified genre
     top50 = ia.get_top50_movies_by_genres(genre)
-    print(top50)
+    # print(top50)
+
     # extract the top 5 movies from the list
     topN = [movie["title"] for movie in top50[:N]]
 
@@ -112,6 +113,147 @@ def getMoviesByGenre(genre,N):
     for i, movie in enumerate(topN):
         print(f"{i + 1}. {movie}")
 
+
+# OLIVIA'S INTEGRATED STUFF
+# This method reads the data generated from "initial_csv_cleaning.py"
+# Reads the list of movies and their associated genres
+# returns top 5 main genres
+# and returns top 3 subgenres as well
+def getTop5(filename):
+    # filename would replace the o_movies
+    data = pd.read_csv(filename)
+    df = data.values
+    genres = []
+    for i in df:
+        # only watched once
+        if i[1] == 1:
+            temp = i[2:]
+            genres = np.concatenate((genres, temp))
+        cleaned_genres = [x for x in genres if str(x) != 'nan']
+
+    # list of most common genres for user 1
+    common_genres = [genre for genre, val in Counter(cleaned_genres).most_common()]
+
+    if len(common_genres) > 4:
+        top_5 = common_genres[0:5]
+    else:
+        top_5 = common_genres
+
+    # list of all possible sub-genres off of top genres
+    res = [(a, b) for idx, a in enumerate(top_5) for b in top_5[idx + 1:]]
+    print("this user's top 5:"+str(top_5))
+    print("this user's subgenres: "+str(res))
+    return [top_5, res]
+
+# This method takes two user profiles and finds their common genres + subgenres
+# Utilizes getTop5 method to get list of genres for each user
+# and then finds commonalities between them
+def getCommonTopGenres(username1, username2):
+
+    # username will replace the hardcoded csv files
+    # THIS DATA IS READING CSV CREATED FROM "initial_csv_cleaning.py"
+    # BUT WILL PROB BE A DATA BUCKET LATER ON
+
+    # top_5_u[x] is a list of top five genres
+    # (Romance, comedy, horror, etc)
+    # sub_u[x] is a list of top subgenres derived from top genres
+    # (Comedy-horror, Romance-horror, etc)
+    top_5_u1 = getTop5('o_movies.csv')[0]
+    sub_u1 = getTop5('o_movies.csv')[1]
+    top_5_u2 = getTop5('a_movies.csv')[0]
+    sub_u2 = getTop5('a_movies.csv')[1]
+
+
+    exact_match = []
+
+    # designate the shorter list to parse through if there is one
+    if len(sub_u1) < len(sub_u2):
+        shorter_list = sub_u1
+        longer_list = sub_u2
+    else:
+        shorter_list = sub_u2
+        longer_list = sub_u1
+    i = 0
+    while i < len(shorter_list) and len(exact_match) < 3:
+        val = shorter_list[i]
+        val_swapped_order = (val[1], val[0])
+        # get matching subgenres
+        # order of genre may be swapped
+        # ex: comedy-horror v horror-comedy
+        # so checking for those cases
+        if val in longer_list or val_swapped_order in longer_list:
+            if val in longer_list:
+                longer_list.remove(val)
+            elif val_swapped_order in longer_list:
+                longer_list.remove(val_swapped_order)
+            shorter_list.remove(val)
+            exact_match.append('-'.join(val))
+            # remove these genres from top 5 genres
+            # so unique genres are remaining in each user's top genre list
+            # for example, if we have a comedy-drama as a matching subdrama,
+            # we don't necessarily want "comedy" and "drama" as further matches
+            # which may be repetitive
+            # this can be changed later tho
+            if val[1] in top_5_u1:
+                top_5_u1.remove(val[1])
+            if val[0] in top_5_u1:
+                top_5_u1.remove(val[0])
+            if val[1] in top_5_u2:
+                top_5_u2.remove(val[1])
+            if val[0] in top_5_u2:
+                top_5_u2.remove(val[0])
+            i-=1
+        i+=1
+
+    # if less than 3 exact subgenre matches found
+    # go back to top 5 genre list and extract commonalities
+    if len(exact_match) < 3:
+        print("user 1 top5 after deletion"+str(top_5_u1))
+        print("user 2 top5 after deletion"+str(top_5_u2))
+        print("exact match"+str(exact_match))
+        # user 1 has more genres to look through
+        if len(top_5_u1) > len(top_5_u2):
+            # loop through shorter list to find matching genres
+            for val in top_5_u2:
+                if val in top_5_u1:
+                    exact_match.append(val)
+        else:
+            for val in top_5_u1:
+                if val in top_5_u2:
+                    exact_match.append(val)
+        if len(exact_match) > 3:
+            fin = exact_match[0:3]
+        else:
+            fin = exact_match
+        # shorter_list = [genre for t in shorter_list for genre in t]
+        # longer_list = [genre for t in longer_list for genre in t]
+        # shorter_list = [*set(shorter_list)]
+        # longer_list = [*set(longer_list)]
+        # print("longer list: "+str(longer_list))
+        # print("shorter list: "+str(shorter_list))
+
+        # for val in shorter_list:
+        #     if val in longer_list:
+        #         one_match.append(val)
+
+        # more_needed = 3 - len(exact_match)
+        # print("more needed:"+str(more_needed))
+        # if len(one_match) >= more_needed:
+        #     temp = one_match[0:more_needed]
+        # else:
+        #     temp = one_match
+        # fin = np.concatenate((exact_match, temp))
+    else:
+        fin = exact_match[0:3]
+
+    print("The top genres between you and you!"+ str(fin))
+
+    # print out top 3 movie with relevant genres
+    # THIS IS THE DATA WE SHOW TO THE USERS
+    for val in fin:
+        genres = val.split("-")
+        getMoviesByGenre(genres, 5)
+    
 
 def getTopGenres(username):
     data = pd.read_csv('commonGenres.csv')
@@ -124,12 +266,33 @@ def getTopGenres(username):
 
 def main():
     username = input("Enter your username: ")
+    username2 = input("Enter the profile you want to mesh with: ")
     #TODO: Look up the user's username to find their profile and get their top genres
     # give links to the movies
-    print("\nMovie suggestions based on your top genres: ")
-    topGenresList = getTopGenres(username)
-    for genre in topGenresList:
-        getMoviesByGenre(genre, 3)
+    # the parameters of the getCommonTopGenres will be the specific profile,
+    # which will then link to the movie/genre data
+    # hard coded for now
+    getCommonTopGenres("balh", ";bah")
+
+    # additional movie print outs if the subgenres become repetitive
+    print("just for funsies, we find movies with both you and your friend's top 2 genres")
+    user1 = getTop5('o_movies.csv')[0]
+    user2 = getTop5('a_movies.csv')[0]
+    if len(user1) > 1:
+        user1 = user1[0:2]
+    if len(user2) > 1:
+        user2 = user2[0:2]
+    four_genres = np.concatenate((user1, user2))
+    # get rid of possible top 2 duplicates within each person's top genres
+    four_genres = [*set(four_genres)]
+    getMoviesByGenre(four_genres, 5)
+
+    # ANOUSHKA'S CODE THAT GIVES INDIVIDUAL TOP GENRES
+    # print("Would you like to see your own top genres?")
+    # print("\nMovie suggestions based on your top genres: ") 
+    # topGenresList = getTopGenres(username)
+    # for genre in topGenresList:
+    #     getMoviesByGenre(genre, 3)
 
 
     while True:
@@ -166,7 +329,6 @@ def main():
                 break
         else:
             print("Enter a valid response (y or n): ")
-
 
 
 ia = IMDb()
