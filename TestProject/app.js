@@ -6,6 +6,8 @@ var logger = require('morgan');
 var bodyParser = require('body-parser');
 var app = express();
 var AWS = require("aws-sdk");
+var fs = require('fs');
+var formidable = require("formidable");
 
 AWS.config.getCredentials(function(err) {
   if (err) console.log(err.stack);
@@ -14,6 +16,8 @@ AWS.config.getCredentials(function(err) {
     console.log("Access key:", AWS.config.credentials.accessKeyId);
   }
 });
+AWS.config.region = 'us-east-1';
+const lambda = new AWS.Lambda({ region: 'us-east-1'});
 
 var iconsList = ['fa-solid fa-hippo', 'fa-solid fa-otter', 'fa-solid fa-paw', 'fa-solid fa-cow', 'fa-solid fa-fish', 'fa-solid fa-dog', 'fa-solid fa-worm', 'fa-solid fa-horse', 'fa-solid fa-frog', 'fa-solid fa-cat', 'fa-solid fa-dove'];
 
@@ -56,27 +60,82 @@ app.get('/algorithm', async function(req, res, next) {
   res.render('algorithm', {algorithmlist: algorithmlist, title: 'Express' });
 });
 
+app.post('/algorithm', async function(req, res, next) {
+  new formidable.IncomingForm().parse(req, async (err, fields, files) => {
+    var selected = Object.keys(fields);
+    await putAlgorithmSelection(selected);
+  })
+
+  const params = {
+    FunctionName: "arn:aws:lambda:us-east-1:315826743513:function:data",
+    InvocationType: "RequestResponse",
+    Payload: JSON.stringify({})
+  };
+  
+  await lambda.invoke(params).promise();
+  
+  
+  var resultsObjects = await getResultsList();
+  var tosend = [];
+  for(var i = 0; i < resultsObjects.length; i++){
+    var item1 = await getResultFile(resultsObjects[i]);
+    tosend.push([item1['title'], item1['description']]);
+  }
+  console.log(tosend)
+  res.render('results', { results: tosend, title: 'Express' });
+  
+});
+
 
 app.post('/newprofile', async function(req, res, next) {
-  var algorithmlist = await getProfiles();
-  var flag = false;
-  algorithmlist.forEach(a=>{
-    console.log(a[0]);
-    console.log(req.body.nickname);
-    if(a[0] == req.body.nickname){
-      flag = true;
-    }
+  
+  new formidable.IncomingForm().parse(req, async (err, fields, files) => {
+      var bucketName = 'added-new-person';
+      var keyNameCSV = fields.nickname + 'csvfile.csv';
+    console.log(fields)
+      var oldPath =  files.watchhistory.filepath;
+      var newPath = __dirname + '/profiles/' + fields.nickname;
+      var rawData = fs.readFileSync(oldPath)
+      console.log(newPath)
+      var bucketPromise = new AWS.S3({apiVersion: '2006-03-01'}).createBucket({Bucket: bucketName}).promise();
+      bucketPromise.then(
+        function(data) {
+          var objectParams = {
+            Bucket: bucketName, 
+            Key: keyNameCSV, 
+            Body: rawData};
+          var uploadPromise = new AWS.S3({apiVersion: '2006-03-01'}).putObject(objectParams).promise();
+          uploadPromise.then(
+            function(data) {
+              console.log("Successfully uploaded data to " + bucketName + "/" + keyNameCSV);
+            });
+      }).catch(
+        function(err) {
+          console.error(err, err.stack);
+      });
+
+
+      var algorithmlist = await getProfiles();
+      var flag = false;
+      algorithmlist.forEach(a=>{
+        console.log(a[0]);
+        console.log(fields.nickname);
+        if(a[0] == fields.nickname){
+          flag = true;
+        }
+      })
+      if(fields.edit == "true"){
+        flag = false;
+      }
+      if(flag){
+        res.render('users', {algorithmlist: algorithmlist, newProfile: 'exists', title: 'Express' });
+      }else{
+        await sendProfile(fields.nickname, fields.username, fields.password, fields.watchhistory);
+        var algorithmlist2 = await getProfiles();
+        res.render('users', {algorithmlist: algorithmlist2, newProfile: 'yes', title: 'Express' });
+      }
   })
-  if(req.body.edit == "true"){
-    flag = false;
-  }
-  if(flag){
-    res.render('users', {algorithmlist: algorithmlist, newProfile: 'exists', title: 'Express' });
-  }else{
-    await sendProfile(req.body.nickname, req.body.username, req.body.password);
-    var algorithmlist2 = await getProfiles();
-    res.render('users', {algorithmlist: algorithmlist2, newProfile: 'yes', title: 'Express' });
-  }
+  
 });
 
 // catch 404 and forward to error handler
@@ -94,6 +153,73 @@ app.use(function(err, req, res, next) {
   res.status(err.status || 500);
   res.render('error');
 });
+
+function getResultsList(){
+  var bucket = 'movieresultsbucket';
+  var keys = [];
+  new Promise((resolve, reject) => {
+    new AWS.S3({apiVersion: '2006-03-01'}).listObjects({Bucket: bucket}, function (err, data) {
+        if (err) {
+
+        } else {
+            console.log("Successfully dowloaded data from bucket");
+            data.Contents.map(d=>{
+              keys.push(d.Key);
+            })
+            
+        }
+    });
+    //console.log(keys)
+  });
+  return new Promise(resolve=>{
+    setTimeout(()=>{
+      resolve(keys);
+    }, 2000);
+  })
+
+}
+
+function putAlgorithmSelection(profilesneeded){
+  var bucketPromise = new AWS.S3({apiVersion: '2006-03-01'}).createBucket({Bucket:'wantedprofiles'}).promise();
+  bucketPromise.then(
+    function(data) {
+      var objectParams = {
+        Bucket: 'wantedprofiles', 
+        Key: 'algorithmnicknames.json', 
+        Body: JSON.stringify({
+          'nicknames': profilesneeded
+        })};
+      var uploadPromise = new AWS.S3({apiVersion: '2006-03-01'}).putObject(objectParams).promise();
+      uploadPromise.then(
+        function(data) {
+          console.log("Successfully uploaded data to bucket wantedprofiles");
+        });
+  }).catch(
+    function(err) {
+      console.error(err, err.stack);
+  });
+}
+
+function getResultFile(key){
+  var bucket = 'movieresultsbucket';
+  var ob;
+  var obs = [];
+  
+  new Promise((resolve, reject) => {
+    new AWS.S3({apiVersion: '2006-03-01'}).getObject({Bucket: bucket, Key: key}, function (err, data) {
+        if (err) {
+        } else {
+          ob = JSON.parse(data.Body.toString());
+        }
+    });
+    //console.log(keys)
+  });
+  return new Promise(resolve=>{
+    setTimeout(()=>{
+      resolve(ob);
+    }, 2000);
+  })
+}
 
 function getProfListBucket(){
   var bucketNameProfList = 'profiles-list'
@@ -148,11 +274,12 @@ async function getProfiles(){
   })
 }
 
-function sendProfile(nickname, username, password){
+function sendProfile(nickname, username, password, csvfile){
   var bucketNameProfList = 'profiles-list'
   var profilesListKeyName = 'profilenames.json'
   var bucketName = 'added-new-person';
   var keyName = nickname + 'userprofile.json';
+  var keyNameCSV = nickname + 'csvfile';
   var profilesAll = [];
 
   new Promise((resolve, reject) => {
@@ -212,6 +339,7 @@ function sendProfile(nickname, username, password){
     function(err) {
       console.error(err, err.stack);
   });
+
 }
 
 
