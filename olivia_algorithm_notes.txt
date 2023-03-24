@@ -1,0 +1,4 @@
+hello
+
+takes 30-35 sec to generate list of movies + genres
+(16 movies for my last 3 months).
