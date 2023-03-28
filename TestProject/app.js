@@ -60,6 +60,12 @@ app.get('/algorithm', async function(req, res, next) {
   res.render('algorithm', {algorithmlist: algorithmlist, title: 'Express' });
 });
 
+function sleep(ms) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
+}
+
 app.post('/algorithm', async function(req, res, next) {
   new formidable.IncomingForm().parse(req, async (err, fields, files) => {
     var selected = Object.keys(fields);
@@ -71,9 +77,6 @@ app.post('/algorithm', async function(req, res, next) {
     InvocationType: "RequestResponse",
     Payload: JSON.stringify({})
   };
-  
-  await lambda.invoke(params).promise();
-  
   
   var resultsObjects = await getResultsList();
   var tosend = [];
@@ -106,7 +109,7 @@ app.post('/newprofile', async function(req, res, next) {
             Body: rawData};
           var uploadPromise = new AWS.S3({apiVersion: '2006-03-01'}).putObject(objectParams).promise();
           uploadPromise.then(
-            function(data) {
+            async function(data) {
               console.log("Successfully uploaded data to " + bucketName + "/" + keyNameCSV);
             });
       }).catch(
@@ -114,26 +117,27 @@ app.post('/newprofile', async function(req, res, next) {
           console.error(err, err.stack);
       });
 
-
-      var algorithmlist = await getProfiles();
-      var flag = false;
-      algorithmlist.forEach(a=>{
-        console.log(a[0]);
-        console.log(fields.nickname);
-        if(a[0] == fields.nickname){
-          flag = true;
+       setTimeout(async()=>{
+        var algorithmlist = await getProfiles();
+        var flag = false;
+        algorithmlist.forEach(a=>{
+          console.log(a[0]);
+          console.log(fields.nickname);
+          if(a[0] == fields.nickname){
+            flag = true;
+          }
+        })
+        if(fields.edit == "true"){
+          flag = false;
         }
-      })
-      if(fields.edit == "true"){
-        flag = false;
-      }
-      if(flag){
-        res.render('users', {algorithmlist: algorithmlist, newProfile: 'exists', title: 'Express' });
-      }else{
-        await sendProfile(fields.nickname, fields.username, fields.password, fields.watchhistory);
-        var algorithmlist2 = await getProfiles();
-        res.render('users', {algorithmlist: algorithmlist2, newProfile: 'yes', title: 'Express' });
-      }
+        if(flag){
+          res.render('users', {algorithmlist: algorithmlist, newProfile: 'exists', title: 'Express' });
+        }else{
+          await sendProfile(fields.nickname, fields.username, fields.password, fields.watchhistory);
+          var algorithmlist2 = await getProfiles();
+          res.render('users', {algorithmlist: algorithmlist2, newProfile: 'yes', title: 'Express' });
+        }
+      }, 60000);
   })
   
 });

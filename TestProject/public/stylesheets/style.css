@@ -162,10 +162,20 @@ body{
 	color:#fff;	
 	text-transform:uppercase;
     font-size: 28px;
-    margin: -80px -100px 40px -100px;
+    margin: -80px -100px 50px -100px;
     display: block;
     text-align: center;
 }
+
+.warning{
+	color:#fff;	
+	text-transform:uppercase;
+    font-size: 14px;
+    margin: -40px -100px 30px -100px;
+    display: block;
+    text-align: center;
+}
+
 .box{
 	position:relative;
 	left:50%;
