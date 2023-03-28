@@ -60,11 +60,6 @@ app.get('/algorithm', async function(req, res, next) {
   res.render('algorithm', {algorithmlist: algorithmlist, title: 'Express' });
 });
 
-function sleep(ms) {
-  return new Promise((resolve) => {
-    setTimeout(resolve, ms);
-  });
-}
 
 app.post('/algorithm', async function(req, res, next) {
   new formidable.IncomingForm().parse(req, async (err, fields, files) => {
@@ -77,11 +72,15 @@ app.post('/algorithm', async function(req, res, next) {
     InvocationType: "RequestResponse",
     Payload: JSON.stringify({})
   };
-  
+  console.log("start");
+  await new Promise(r => setTimeout(r, 30000));
+  console.log("end");
   var resultsObjects = await getResultsList();
   var tosend = [];
+  console.log(resultsObjects.length);
   for(var i = 0; i < resultsObjects.length; i++){
     var item1 = await getResultFile(resultsObjects[i]);
+    console.log(item1);
     tosend.push([item1['title'], item1['description']]);
   }
   console.log(tosend)
@@ -184,6 +183,7 @@ function getResultsList(){
 }
 
 function putAlgorithmSelection(profilesneeded){
+
   var bucketPromise = new AWS.S3({apiVersion: '2006-03-01'}).createBucket({Bucket:'wantedprofiles'}).promise();
   bucketPromise.then(
     function(data) {
@@ -208,12 +208,14 @@ function getResultFile(key){
   var bucket = 'movieresultsbucket';
   var ob;
   var obs = [];
-  
+  console.log(key);
   new Promise((resolve, reject) => {
     new AWS.S3({apiVersion: '2006-03-01'}).getObject({Bucket: bucket, Key: key}, function (err, data) {
         if (err) {
+          //console.log(err);
         } else {
           ob = JSON.parse(data.Body.toString());
+          console.log(ob);
         }
     });
     //console.log(keys)

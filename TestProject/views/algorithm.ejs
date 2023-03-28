@@ -6,28 +6,26 @@
 	<%- include('header.ejs') %>
 </head>
 
+
 <section class="hero-area-profiles" id="home">
-    <div class="container">
-
-      <div class="profiles">
-        <h1>Existing Profiles</h1>
-          <div class="row" id="rowprofiles">
-            <% for(var i = 0 ; i < algorithmlist.length ; i++) { %>
-              <label>
-                <input type="checkbox" name="" />
-                <div class="icon-box">
-                  <i class='<%=algorithmlist[i][1]%>'></i>
-                  <span><%=algorithmlist[i][0]%>
-                  </span>
-                </div>
-              </label>
-            <% } %>
-          </div>
-        <button type="submit" class="btnAlgorithm">submit</button>
+  <div class="container">
+      <h1>Profile Selection</h1>
+      <form method="post" id="algorithmSelectForm" action="/algorithm" enctype="multipart/form-data">
+      <div class="row" id="rowprofiles">
+        <% for(var i = 0 ; i < algorithmlist.length ; i++) { %>
+          <label>
+            <input type="checkbox" name="<%=algorithmlist[i][0]%>" id="<%=algorithmlist[i][0]%>"/>
+            <div class="icon-box">
+              <i class='<%=algorithmlist[i][1]%>'></i>
+              <span><%=algorithmlist[i][0]%>
+              </span>
+            </div>
+          </label>
+        <% } %>
       </div>
-  </div>
+    </div>
+  <button type="submit" style="color:#D81F26 !important;background-color:#ffff; outline: none;border: 0;color: #D81F26;padding:10px 20px;text-transform:uppercase;margin-top:20px;border-radius:2px;cursor:pointer;font-weight: bold;" class="btnAlgorithm">submit</button>
+</form>
 </section>
-    
-
 
 </html>
