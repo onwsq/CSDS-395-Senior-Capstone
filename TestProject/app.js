@@ -92,53 +92,108 @@ app.post('/algorithm', async function(req, res, next) {
 app.post('/newprofile', async function(req, res, next) {
   
   new formidable.IncomingForm().parse(req, async (err, fields, files) => {
+      console.log(fields);
       var bucketName = 'added-new-person';
       var keyNameCSV = fields.nickname + 'csvfile.csv';
-    console.log(fields)
+      var toDelete = fields.delete;
       var oldPath =  files.watchhistory.filepath;
       var newPath = __dirname + '/profiles/' + fields.nickname;
       var rawData = fs.readFileSync(oldPath)
-      console.log(newPath)
-      var bucketPromise = new AWS.S3({apiVersion: '2006-03-01'}).createBucket({Bucket: bucketName}).promise();
-      bucketPromise.then(
-        function(data) {
-          var objectParams = {
-            Bucket: bucketName, 
-            Key: keyNameCSV, 
-            Body: rawData};
-          var uploadPromise = new AWS.S3({apiVersion: '2006-03-01'}).putObject(objectParams).promise();
-          uploadPromise.then(
-            async function(data) {
-              console.log("Successfully uploaded data to " + bucketName + "/" + keyNameCSV);
-            });
-      }).catch(
-        function(err) {
-          console.error(err, err.stack);
-      });
+      
+      if(toDelete == 'deleted'){
+        var deletePromise = new AWS.S3({apiVersion: '2006-03-01'}).deleteObject({Bucket: bucketName, Key: fields.nickname + 'userprofile.json'}).promise();
+        deletePromise.then(
+          async function(data) {
+            console.log("Successfully deleted data to " + bucketName + "/");
+          });
+        var deletePromise2 = new AWS.S3({apiVersion: '2006-03-01'}).deleteObject({Bucket: bucketName, Key: keyNameCSV}).promise();
+        deletePromise2.then(
+        async function(data) {
+          console.log("Successfully deleted data to " + bucketName + "/");
+        });
+        var bucketNameProfList = 'profiles-list'
+        var profilesListKeyName = 'profilenames.json'
+        
+        var profilesAll = [];
 
-       setTimeout(async()=>{
-        var algorithmlist = await getProfiles();
-        var flag = false;
-        algorithmlist.forEach(a=>{
-          console.log(a[0]);
-          console.log(fields.nickname);
-          if(a[0] == fields.nickname){
-            flag = true;
-          }
-        })
-        if(fields.edit == "true"){
-          flag = false;
-        }
-        if(flag){
-          res.render('users', {algorithmlist: algorithmlist, newProfile: 'exists', title: 'Express' });
-        }else{
-          await sendProfile(fields.nickname, fields.username, fields.password, fields.watchhistory);
-          var algorithmlist2 = await getProfiles();
-          res.render('users', {algorithmlist: algorithmlist2, newProfile: 'yes', title: 'Express' });
-        }
-      }, 60000);
-  })
+        new Promise((resolve, reject) => {
+          new AWS.S3({apiVersion: '2006-03-01'}).getObject({Bucket: bucketNameProfList, Key: profilesListKeyName}, function (err, data) {
+              if (err) {
+
+              } else {
+                  console.log("Successfully dowloaded data from bucket");
+                  var object = JSON.parse(data.Body.toString());
+                  var profiles = object.profiles;
+                  profiles.forEach(p=>{
+                    profilesAll.push(p);
+                  })
+              }
+          });
+        });
+        var bucketPromise = new AWS.S3({apiVersion: '2006-03-01'}).createBucket({Bucket: bucketNameProfList}).promise();
+        bucketPromise.then(
+          function(data) {
+            var index1 = profilesAll.indexOf(fields.nickname);
+            profilesAll.splice(index1, 1);
+            var objectParams = {
+              Bucket: bucketNameProfList, 
+              Key: profilesListKeyName, 
+              Body: JSON.stringify({
+                'profiles': profilesAll
+              })};
+            var uploadPromise = new AWS.S3({apiVersion: '2006-03-01'}).putObject(objectParams).promise();
+            uploadPromise.then(
+              function(data) {
+                
+              });
+        }).catch(
+          function(err) {
+            console.error(err, err.stack);
+        });
+        res.render('homepage', { title: 'Express' });
+      }else{
+
+        var bucketPromise = new AWS.S3({apiVersion: '2006-03-01'}).createBucket({Bucket: bucketName}).promise();
+        bucketPromise.then(
+          function(data) {
+            var objectParams = {
+              Bucket: bucketName, 
+              Key: keyNameCSV, 
+              Body: rawData};
+            var uploadPromise = new AWS.S3({apiVersion: '2006-03-01'}).putObject(objectParams).promise();
+            uploadPromise.then(
+              async function(data) {
+                console.log("Successfully uploaded data to " + bucketName + "/" + keyNameCSV);
+              });
+        }).catch(
+          function(err) {
+            console.error(err, err.stack);
+        });
   
+         setTimeout(async()=>{
+          var algorithmlist = await getProfiles();
+          var flag = false;
+          algorithmlist.forEach(a=>{
+            console.log(a[0]);
+            console.log(fields.nickname);
+            if(a[0] == fields.nickname){
+              flag = true;
+            }
+          })
+          if(fields.edit == "true"){
+            flag = false;
+          }
+          if(flag){
+            res.render('users', {algorithmlist: algorithmlist, newProfile: 'exists', title: 'Express' });
+          }else{
+            await sendProfile(fields.nickname, fields.username, fields.password, fields.watchhistory);
+            var algorithmlist2 = await getProfiles();
+            res.render('users', {algorithmlist: algorithmlist2, newProfile: 'yes', title: 'Express' });
+          }
+        }, 60000);
+
+      }
+  })
 });
 
 // catch 404 and forward to error handler
@@ -302,7 +357,6 @@ function sendProfile(nickname, username, password, csvfile){
         }
     });
   });
-  console.log(profilesAll);
   profilesAll.push(nickname);
 
   var bucketPromise = new AWS.S3({apiVersion: '2006-03-01'}).createBucket({Bucket: bucketName}).promise();
@@ -334,7 +388,7 @@ function sendProfile(nickname, username, password, csvfile){
         Bucket: bucketNameProfList, 
         Key: profilesListKeyName, 
         Body: JSON.stringify({
-          'profiles': profilesAll
+          'profiles': [...new Set(profilesAll)]
         })};
       var uploadPromise = new AWS.S3({apiVersion: '2006-03-01'}).putObject(objectParams).promise();
       uploadPromise.then(

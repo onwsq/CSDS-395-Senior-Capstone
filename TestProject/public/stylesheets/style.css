@@ -233,6 +233,21 @@ body{
   left: 100px;
 }
 
+.btn2{
+	color:rgb(47, 47, 47);
+	background-color: white;
+	outline: none;
+    border: 0;
+    color: rgb(54, 52, 52);
+	padding:10px 20px;
+	text-transform:uppercase;
+	margin-top:20px;
+	border-radius:2px;
+	cursor:pointer;
+	position:absolute;
+  right: 100px;
+}
+
 .btnAlgorithm{
 	color:#D81F26 !important;
 	background-color: white;
