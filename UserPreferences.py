@@ -9,6 +9,7 @@ from collections import Counter
 import datetime
 from imdb import IMDb
 
+
 def getActorPref():
     actor_name = input("Do you have a preference for a specific actor? If so, please enter their name. Otherwise, enter 'no': ")
     if actor_name == 'no':
@@ -128,6 +129,8 @@ def getMovieAndPlots(genre,N):
     for i, movie in enumerate(topN):
         ###################### movie.data['plot'] gets the plot summary
         print(f"{i + 1}. {movie['title']}"+"\n"+movie.data['plot'])
+        # link = mp.get_poster(title=movie['title'])
+        print(movie['cover url'])
 
 
 # OLIVIA'S INTEGRATED STUFF
