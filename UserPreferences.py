@@ -26,20 +26,23 @@ def getReleaseYearRange():
         print("1. Before 2000s")
         print("2. 2000s")
         print("3. 2010s")
-        print("4. Just Released (<2 years)")
-        release_year_range = input("Enter your choice (1, 2, 3, or 4): ")
-        if release_year_range in ["1", "2", "3", "4"]:
+        print("4. 2020s")
+        print("5. Just Released (<2 years)")
+        release_year_range = input("Enter your choice (1, 2, 3, 4, or 5): ")
+        if release_year_range in ["1", "2", "3", "4", "5"]:
             break  # Exit the loop if the input is valid
         else:
-            print("Enter a valid response (1, 2, 3, or 4): ")
+            print("Enter a valid response (1, 2, 3, 4, or 5): ")
 
     if release_year_range == '1':
         release_year_range = ('1900', '1999')
     elif release_year_range == '2':
-        release_year_range = ('2000', '2023')
+        release_year_range = ('2000', '2009')
     elif release_year_range == '3':
-        release_year_range = ('2010', '2023')
+        release_year_range = ('2010', '2019')
     elif release_year_range == '4':
+        release_year_range = ('2020', '2029')
+    elif release_year_range == '5':
         release_year_range = ('2021', '2023')
     else:
         release_year_range = None
@@ -101,20 +104,39 @@ def get_actor_movies(actor_name):
 
     return movies
 
-def getMoviesByGenre(genre,N):
+def getMoviesByPrefs(genre, releaseYearRange, durationRange, N):
     # get the top 50 movies in the specified genre
     top50 = ia.get_top50_movies_by_genres(genre)
-    # print(top50)
-    test = [movie for movie in top50[:N]]
-    print("test list array thing: "+str(test))
-    # extract the top 5 movies from the list
-    topN = [movie["title"] for movie in top50[:N]]
 
-    # print the top 5 movies
-    print(f"\nTop {N} movies in the {genre} genre:")
-    for i, movie in enumerate(topN):
-        print(f"{i + 1}. {movie}")
+    # list for movie info
+    movieData = []
+    # iterate through the top50 list to get the runtime of each movie
+    for movie in top50[:]:
+        # check if the movie has a "runtime" attribute
+        if not movie.get("runtime"):
+            continue
 
+        # check if the movie matches the release year and duration preferences
+        year = int(movie.get("year"))
+        runtime = int(movie.get("runtime")[0])
+
+        if int(releaseYearRange[0]) <= year <= int(releaseYearRange[1]) and \
+                int(durationRange[0]) <= runtime <= int(durationRange[1]):
+
+            # add the movies to the movieData list
+            movieData.append({"title": movie.get("title"), "year": year, "runtime": runtime})
+
+    if not movieData:
+        print("\nThere are no recommended movies based on your preferences.")
+    else:
+        print("\nHere are recommended movies based on your preferences:")
+        count = 0
+        for i, movie in enumerate(movieData, start=1):
+            runtime_hours, runtime_minutes = divmod(movie["runtime"], 60)
+            print("{}. {}: {}, {}h {}m".format(i, movie["title"], movie["year"], runtime_hours, runtime_minutes))
+            count += 1
+            if count == N:
+                break
 
 # NEW METHOD TO GET PLOT AND MOVIE TITLE
 def getMovieAndPlots(genre,N):
@@ -334,7 +356,7 @@ def main():
                     releaseYearRange = getReleaseYearRange()
                     durationRange = getDurationRange()
 
-                    genreMoviesList = getMoviesByGenre(genre, 5)
+                    genreMoviesList = getMoviesByPrefs(genre, releaseYearRange, durationRange, 5)
                     print(genreMoviesList)
                     break
 
