@@ -130,7 +130,11 @@ def getMovieAndPlots(genre,N):
         ###################### movie.data['plot'] gets the plot summary
         print(f"{i + 1}. {movie['title']}"+"\n"+movie.data['plot'])
         # link = mp.get_poster(title=movie['title'])
-        print(movie['cover url'])
+        # print(movie['cover url'])
+        url = movie['cover url']
+        index = url.index('._')
+        url = url[0:index]
+        print(url)
 
 
 # OLIVIA'S INTEGRATED STUFF
