@@ -2,6 +2,7 @@ import csv
 import pandas as pd
 import re
 from datetime import date
+import imdb
 from datetime import datetime
 import json
 import boto3  # pip install boto3

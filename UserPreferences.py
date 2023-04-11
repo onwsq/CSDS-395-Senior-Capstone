@@ -9,6 +9,7 @@ from collections import Counter
 import datetime
 from imdb import IMDb
 
+
 def getActorPref():
     actor_name = input("Do you have a preference for a specific actor? If so, please enter their name. Otherwise, enter 'no': ")
     if actor_name == 'no':
@@ -104,7 +105,8 @@ def getMoviesByGenre(genre,N):
     # get the top 50 movies in the specified genre
     top50 = ia.get_top50_movies_by_genres(genre)
     # print(top50)
-
+    test = [movie for movie in top50[:N]]
+    print("test list array thing: "+str(test))
     # extract the top 5 movies from the list
     topN = [movie["title"] for movie in top50[:N]]
 
@@ -112,6 +114,23 @@ def getMoviesByGenre(genre,N):
     print(f"\nTop {N} movies in the {genre} genre:")
     for i, movie in enumerate(topN):
         print(f"{i + 1}. {movie}")
+
+
+# NEW METHOD TO GET PLOT AND MOVIE TITLE
+def getMovieAndPlots(genre,N):
+    # get the top 50 movies in the specified genre
+    top50 = ia.get_top50_movies_by_genres(genre)
+    # print(top50)
+    topN = top50[:N]
+    # extract the top 5 movies from the list
+
+    # print the top 5 movies
+    print(f"\nTop {N} movies in the {genre} genre:")
+    for i, movie in enumerate(topN):
+        ###################### movie.data['plot'] gets the plot summary
+        print(f"{i + 1}. {movie['title']}"+"\n"+movie.data['plot'])
+        # link = mp.get_poster(title=movie['title'])
+        print(movie['cover url'])
 
 
 # OLIVIA'S INTEGRATED STUFF
@@ -208,8 +227,8 @@ def getCommonTopGenres(username1, username2):
     # if less than 3 exact subgenre matches found
     # go back to top 5 genre list and extract commonalities
     if len(exact_match) < 3:
-        print("user 1 top5 after deletion"+str(top_5_u1))
-        print("user 2 top5 after deletion"+str(top_5_u2))
+        # print("user 1 top5 after deletion"+str(top_5_u1))
+        # print("user 2 top5 after deletion"+str(top_5_u2))
         print("exact match"+str(exact_match))
         # user 1 has more genres to look through
         if len(top_5_u1) > len(top_5_u2):
@@ -252,7 +271,7 @@ def getCommonTopGenres(username1, username2):
     # THIS IS THE DATA WE SHOW TO THE USERS
     for val in fin:
         genres = val.split("-")
-        getMoviesByGenre(genres, 5)
+        getMovieAndPlots(genres, 5)
     
 
 def getTopGenres(username):
@@ -276,6 +295,7 @@ def main():
 
     # additional movie print outs if the subgenres become repetitive
     print("just for funsies, we find movies with both you and your friend's top 2 genres")
+    
     user1 = getTop5('o_movies.csv')[0]
     user2 = getTop5('a_movies.csv')[0]
     if len(user1) > 1:
@@ -285,7 +305,7 @@ def main():
     four_genres = np.concatenate((user1, user2))
     # get rid of possible top 2 duplicates within each person's top genres
     four_genres = [*set(four_genres)]
-    getMoviesByGenre(four_genres, 5)
+    getMovieAndPlots(four_genres, 5)
 
     # ANOUSHKA'S CODE THAT GIVES INDIVIDUAL TOP GENRES
     # print("Would you like to see your own top genres?")
