@@ -28,11 +28,12 @@ def getReleaseYearRange():
         print("3. 2010s")
         print("4. 2020s")
         print("5. Just Released (<2 years)")
-        release_year_range = input("Enter your choice (1, 2, 3, 4, or 5): ")
-        if release_year_range in ["1", "2", "3", "4", "5"]:
+        print("6. No preference")
+        release_year_range = input("Enter your choice (1, 2, 3, 4, 5, or 6): ")
+        if release_year_range in ["1", "2", "3", "4", "5", "6"]:
             break  # Exit the loop if the input is valid
         else:
-            print("Enter a valid response (1, 2, 3, 4, or 5): ")
+            print("Enter a valid response (1, 2, 3, 4, 5, or 6): ")
 
     if release_year_range == '1':
         release_year_range = ('1900', '1999')
@@ -44,6 +45,8 @@ def getReleaseYearRange():
         release_year_range = ('2020', '2029')
     elif release_year_range == '5':
         release_year_range = ('2021', '2023')
+    elif release_year_range == '6':
+        release_year_range = ('1900', '2023')
     else:
         release_year_range = None
     return release_year_range
@@ -53,19 +56,50 @@ def getDurationRange():
         print("Select a duration range:")
         print("1. Under 2 hours")
         print("2. Over 2 hours")
-        duration_range = input("Enter your choice (1 or 2): ")
-        if duration_range in ["1", "2"]:
+        print("3. No preference")
+        duration_range = input("Enter your choice (1, 2, or 3): ")
+        if duration_range in ["1", "2", "3"]:
             break
         else:
-            print("Enter a valid response (1 or 2): ")
+            print("Enter a valid response (1, 2, or 3): ")
 
     if duration_range == '1':
         duration_range = ('0', '120')
     elif duration_range == '2':
         duration_range = ('120', '1000')
+    elif duration_range == '3':
+        duration_range = ('0', '1000')
     else:
         duration_range = None
     return duration_range
+
+def getRatingRange():
+    while True:
+        print("Select a rating range:")
+        print("1. Under 5.0")
+        print("2. 5.0 to 7.0")
+        print("3. 7.0 to 8.0 ")
+        print("4. Over 8.0")
+        print("5. No preference")
+        ratingRange = input("Enter your choice (1, 2, 3, 4, or 5): ")
+        if ratingRange in ["1", "2", "3", "4", "5"]:
+            break
+        else:
+            print("Enter a valid response (1, 2, 3, 4, or 5): ")
+
+    if ratingRange == '1':
+        ratingRange = ('0', '4.9')
+    elif ratingRange == '2':
+        ratingRange = ('5.0', '6.9')
+    elif ratingRange == '3':
+        ratingRange = ('7.0', '7.9')
+    elif ratingRange == '4':
+        ratingRange = ('8.0', '10.0')
+    elif ratingRange == '5':
+        ratingRange = ('0', '10.0')
+    else:
+        ratingRange = None
+    return ratingRange
 
 
 def get_actor_movies(actor_name):
@@ -104,7 +138,7 @@ def get_actor_movies(actor_name):
 
     return movies
 
-def getMoviesByPrefs(genre, releaseYearRange, durationRange, N):
+def getMoviesByPrefs(genre, releaseYearRange, durationRange, ratingRange, N):
     # get the top 50 movies in the specified genre
     top50 = ia.get_top50_movies_by_genres(genre)
 
@@ -115,16 +149,27 @@ def getMoviesByPrefs(genre, releaseYearRange, durationRange, N):
         # check if the movie has a "runtime" attribute
         if not movie.get("runtime"):
             continue
-
+        print("Movie: ", movie)
         # check if the movie matches the release year and duration preferences
         year = int(movie.get("year"))
         runtime = int(movie.get("runtime")[0])
+        rating = movie.get("rating")
+        if rating is not None:
+            rating = float(rating)
+        else:
+            print("rating is none: ", movie)
 
-        if int(releaseYearRange[0]) <= year <= int(releaseYearRange[1]) and \
-                int(durationRange[0]) <= runtime <= int(durationRange[1]):
+        # to check if the user entered No Preference for any of the options
+        yearPrefFlag = releaseYearRange != "No preference"
+        durationPrefFlag = durationRange != "No preference"
+        ratingPrefFlag = ratingRange != "No preference"
 
+        if (not yearPrefFlag or (int(releaseYearRange[0]) <= year <= int(releaseYearRange[1]))) and \
+                (not durationPrefFlag or (int(durationRange[0]) <= runtime <= int(durationRange[1]))) and \
+                (not ratingPrefFlag or (float(ratingRange[0]) <= rating <= float(ratingRange[1]))):
             # add the movies to the movieData list
-            movieData.append({"title": movie.get("title"), "year": year, "runtime": runtime})
+            movieData.append({"title": movie.get("title"), "year": year, "runtime": runtime, "rating": rating})
+        print(movieData)
 
     if not movieData:
         print("\nThere are no recommended movies based on your preferences.")
@@ -133,7 +178,7 @@ def getMoviesByPrefs(genre, releaseYearRange, durationRange, N):
         count = 0
         for i, movie in enumerate(movieData, start=1):
             runtime_hours, runtime_minutes = divmod(movie["runtime"], 60)
-            print("{}. {}: {}, {}h {}m".format(i, movie["title"], movie["year"], runtime_hours, runtime_minutes))
+            print("{}. {}: {}, {}h {}m, {}".format(i, movie["title"], movie["year"], runtime_hours, runtime_minutes, movie["rating"]))
             count += 1
             if count == N:
                 break
@@ -351,12 +396,12 @@ def main():
                     break
                 # if they don't have an actor preference
                 else:
-                    #TODO: currently just giving the top 5 movies in the genre they prefer. Need to add release year range and duration range
                     genre = getGenrePref()
                     releaseYearRange = getReleaseYearRange()
                     durationRange = getDurationRange()
+                    ratingRange = getRatingRange()
 
-                    genreMoviesList = getMoviesByPrefs(genre, releaseYearRange, durationRange, 5)
+                    genreMoviesList = getMoviesByPrefs(genre, releaseYearRange, durationRange, ratingRange, 5)
                     print(genreMoviesList)
                     break
 
@@ -367,6 +412,7 @@ def main():
                     print(f"Genre: {genre}")
                     print(f"Release Year Range: {releaseYearRange}")
                     print(f"Duration Range: {durationRange}")
+                    print(f"Rating Range: {ratingRange}")
             else:
                 break
         else:
