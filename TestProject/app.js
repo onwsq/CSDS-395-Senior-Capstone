@@ -99,7 +99,7 @@ app.post('/algorithm', async function(req, res, next) {
     var item1 = await getResultFile(resultsObjects[i]);
     console.log(item1);
     downloadImage(item1['poster'], 'public/assets/img/' + item1['title'] + '.png');
-    tosend.push([item1['title'], item1['description'], item1['poster'], item1['releaseDate'], item1['runtime']]);
+    tosend.push([item1['title'], item1['description'], item1['poster'], item1['releaseDate'], item1['runtime'], item1['subgenre']]);
   }
   console.log(tosend)
   res.render('results', { results: tosend, title: 'Express' });
