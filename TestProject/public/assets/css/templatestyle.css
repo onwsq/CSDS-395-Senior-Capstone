@@ -400,7 +400,7 @@ option {
 ------------------------------------*/
 .hero-area {
     /* position: relative; */
-    position: fixed; 
+    /* position: fixed;  */
   top: 0; 
   left: 0; 
 	
@@ -408,10 +408,10 @@ option {
   min-width: 100%;
   min-height: 100%;
     background-image: url('../img/background1.jpg');
-    background-repeat: no-repeat;
+    background-repeat: no-repeat;s
     background-position: center;
     background-size: cover;
-    overflow: hidden;
+    /* overflow: visible; */
 }
 
 .hero-area-about {
@@ -540,12 +540,12 @@ option {
 	margin-left: -15px;
 }
 .slide-trailor {
-    overflow: hidden;
+    overflow: visible;
     margin-top: 40px;
 }
 
 .slide-cast {
-    overflow: hidden;
+    overflow: visible;
 }
 
 .slide-trailor h3 {
@@ -771,7 +771,7 @@ hr {
 }
 .news-slide-area {
     position: relative;
-    overflow: hidden;
+    overflow: visible;
 }
 .news-next {
     position: absolute;
