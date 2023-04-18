@@ -448,6 +448,24 @@ option {
     overflow: hidden; 
 }
 
+  /* for new profile creation page */
+  .hero-area-new-profile {
+    /* position: relative; */
+    /* position: relative;  */
+    position: fixed; 
+    top: 0; 
+    left: 0; 
+	
+  /* Preserve aspet ratio */
+     min-width: 100%;
+  min-height: 100%;
+    background-image: url('../img/background4.jpeg');
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+    overflow: hidden; 
+  }
+
 .hero-area-home {
     /* position: relative; */
     position: fixed; 
@@ -1435,7 +1453,8 @@ hr {
     background: var(--color);
     color: #fff;
   } */
-  
+
+
   /* for new profile */
   /* body{
       background-color: white;
@@ -1543,6 +1562,21 @@ hr {
     font-family: Marker Felt, fantasy;
     border-bottom: 3px #D81F26 dashed;
   }
+
+  /* for profile creation page */
+  .hero-area-new-profile .box{
+    position:fixed;
+	left:50%;
+    width: 90%;
+    top: 50%;
+	transform: translate(-50%,-50%);
+	border-radius:3px;
+	padding:120px 180px;
+   }
+
+   .hero-area-new-profile .box h1{
+    text-align: center;
+   }
 
   /* .container {
     background-color: #2ecc71;

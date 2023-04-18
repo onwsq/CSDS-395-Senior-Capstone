@@ -2,11 +2,52 @@
 <!DOCTYPE html>
 <html lang="en">
 
+<head>
+	<%- include('header.ejs') %>
+</head>
+<body>
+  <section class="hero-area-new-profile" id="home">
+      
+      <div class="box">
+        <h1>Create New Profile</h1> <br>
+
+        <form method="post" id="newProfileForm" action="/newprofile" enctype="multipart/form-data">
+          <span class="warning">Please Note: This form takes approximately 1 minute to process on submission.</span> <br>
+          
+          <div class="input-container">
+            <input type="text" id="nickname" name="nickname" required=""/>
+            <label>Profile Nickname</label>		
+          </div>
+          
+          <div class="input-container">
+            <input type="text" id="username" name="username" required=""/>
+            <label>Netflix Username</label>		
+          </div>
+          
+          <div class="input-container">		
+            <input type="password" id="password" name="password" required=""/>
+            <label>Netflix Password</label>
+          </div>
+          
+          <div class="input-container">		
+            <input type="file" accept=".csv" id="watchhistory" name="watchhistory" required=""/>
+            <label>Netflix Watch History (csv file)</label>
+          </div>
+          
+          <input type="hidden" id="edit" name="edit" value="false">
+          <button type="submit" value="submit" class="btn">submit</button>
+        </form>
+      </div>
+  </section>
+</body>
+
+<!--
 <meta charset="utf-8">
 <title>New Profile</title>
 <meta charset="utf-8">
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 <link rel="stylesheet" href="stylesheets/style.css">
+
 <head>
     <nav class="navbar navbar-default">
       <div class="container">
@@ -22,6 +63,8 @@
       </div>
     </nav>
 </head> 
+
+
 <div class="newprofilebody">
 <div class="box">
 	<form method="post" id="newProfileForm" action="/newprofile" enctype="multipart/form-data">
@@ -48,6 +91,7 @@
 </form>	
 </div>
 </div>
+-->
 
 <script>
   var parser = new URL(window.location.href);

@@ -8,6 +8,7 @@ var app = express();
 var AWS = require("aws-sdk");
 var fs = require('fs');
 var formidable = require("formidable");
+const httpclient = require('https');
 
 AWS.config.getCredentials(function(err) {
   if (err) console.log(err.stack);
@@ -60,6 +61,22 @@ app.get('/algorithm', async function(req, res, next) {
   res.render('algorithm', {algorithmlist: algorithmlist, title: 'Express' });
 });
 
+function downloadImage(url, filepath) {
+  return new Promise((resolve, reject) => {
+    httpclient.get(url, (res2) => {
+      if (res2.statusCode === 200) {
+          res2.pipe(fs.createWriteStream(filepath))
+              .on('error', reject)
+              .once('close', () => resolve(filepath));
+      } else {
+        res.resume();
+        reject(new Error(`Request Failed With a Status Code: ${res.statusCode}`));
+      }
+    });
+  });
+
+}
+
 
 app.post('/algorithm', async function(req, res, next) {
   new formidable.IncomingForm().parse(req, async (err, fields, files) => {
@@ -81,7 +98,8 @@ app.post('/algorithm', async function(req, res, next) {
   for(var i = 0; i < resultsObjects.length; i++){
     var item1 = await getResultFile(resultsObjects[i]);
     console.log(item1);
-    tosend.push([item1['title'], item1['description']]);
+    downloadImage(item1['poster'], 'public/assets/img/' + item1['title'] + '.png');
+    tosend.push([item1['title'], item1['description'], item1['poster'], item1['releaseDate'], item1['runtime'], item1['subgenre']]);
   }
   console.log(tosend)
   res.render('results', { results: tosend, title: 'Express' });

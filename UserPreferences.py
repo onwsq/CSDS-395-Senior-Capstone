@@ -130,7 +130,20 @@ def getMovieAndPlots(genre,N):
         ###################### movie.data['plot'] gets the plot summary
         print(f"{i + 1}. {movie['title']}"+"\n"+movie.data['plot'])
         # link = mp.get_poster(title=movie['title'])
-        print(movie['cover url'])
+        # print(movie['cover url'])
+        print("RELEASE DATE: "+str(movie['year']))
+        try:
+            runtime = movie['runtime'][0]
+            hours = int(int(runtime)/60)
+            minutes = int(runtime)%60
+            print("RUNTIME: "+str(hours)+"h"+str(minutes)+"m")
+        except:
+            print("no runtime")
+        url = movie['cover url']
+        index = url.index('._')
+        url = url[0:index]
+        print(url)
+        print("movie subgenre(s): "+", ".join(genre))
 
 
 # OLIVIA'S INTEGRATED STUFF
@@ -305,6 +318,7 @@ def main():
     four_genres = np.concatenate((user1, user2))
     # get rid of possible top 2 duplicates within each person's top genres
     four_genres = [*set(four_genres)]
+    print("These are the top subgenres between your profiles: "+str(four_genres))
     getMovieAndPlots(four_genres, 5)
 
     # ANOUSHKA'S CODE THAT GIVES INDIVIDUAL TOP GENRES
