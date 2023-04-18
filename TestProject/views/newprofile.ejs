@@ -6,30 +6,38 @@
 	<%- include('header.ejs') %>
 </head>
 <body>
-  <section class="hero-area-profiles" id="home">
-    <div class="box">
-      <form method="post" id="newProfileForm" action="/newprofile" enctype="multipart/form-data">
-        <span class="text-center">New Profile</span>
-        <span class="warning">Please Note: This form takes approximately 1 minute to process on submission.</span>
-        <div class="input-container">
-          <input type="text" id="nickname" name="nickname" required=""/>
-          <label>Profile Nickname</label>		
-        </div>
-        <div class="input-container">
-          <input type="text" id="username" name="username" required=""/>
-          <label>Netflix Username</label>		
-        </div>
-        <div class="input-container">		
-          <input type="password" id="password" name="password" required=""/>
-          <label>Netflix Password</label>
-        </div>
-        <div class="input-container">		
-          <input type="file" accept=".csv" id="watchhistory" name="watchhistory" required=""/>
-          <label>Netflix Watch History (csv file)</label>
-        </div>
-        <input type="hidden" id="edit" name="edit" value="false">
-        <button type="submit" value="submit" class="btn">submit</button>
-    </form>	
+  <section class="hero-area-new-profile" id="home">
+      
+      <div class="box">
+        <h1>Create New Profile</h1> <br>
+
+        <form method="post" id="newProfileForm" action="/newprofile" enctype="multipart/form-data">
+          <span class="warning">Please Note: This form takes approximately 1 minute to process on submission.</span> <br>
+          
+          <div class="input-container">
+            <input type="text" id="nickname" name="nickname" required=""/>
+            <label>Profile Nickname</label>		
+          </div>
+          
+          <div class="input-container">
+            <input type="text" id="username" name="username" required=""/>
+            <label>Netflix Username</label>		
+          </div>
+          
+          <div class="input-container">		
+            <input type="password" id="password" name="password" required=""/>
+            <label>Netflix Password</label>
+          </div>
+          
+          <div class="input-container">		
+            <input type="file" accept=".csv" id="watchhistory" name="watchhistory" required=""/>
+            <label>Netflix Watch History (csv file)</label>
+          </div>
+          
+          <input type="hidden" id="edit" name="edit" value="false">
+          <button type="submit" value="submit" class="btn">submit</button>
+        </form>
+      </div>
   </section>
 </body>
 
